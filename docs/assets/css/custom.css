@@ -1,0 +1,5 @@
+.md-header__button.md-logo img{
+  scale: 1.5;
+  border: solid 1px white;
+  border-radius: 50%;
+}

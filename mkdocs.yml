@@ -1,0 +1,39 @@
+site_name: SATURN
+
+theme:
+  name: 'material'
+  logo: 'assets/images/logo.svg'
+  favicon: 'assets/images/favicon.ico'
+  custom_dir: 'docs/overrides'
+  palette:
+    - scheme: 'default'
+      media: '(prefers-color-scheme: light)'
+      toggle:
+        icon: 'material/lightbulb'
+        name: "Switch to dark mode"
+    - scheme: 'slate'
+      media: '(prefers-color-scheme: dark)'
+      primary: 'blue'
+      toggle:
+        icon: 'material/lightbulb-outline'
+        name: 'Switch to light mode'
+
+repo_name: saturn
+repo_url: https://github.com/zlhywlf/saturn
+
+nav:
+  - Saturn: 'index.md'
+  - Scrapy framework: "chapters/scrapy.md"
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      css_class: highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_css:
+  - assets/css/custom.css
