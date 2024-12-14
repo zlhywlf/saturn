@@ -15,16 +15,16 @@ from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Result import Result
 
 
-class SimpleDecisionEngine(DecisionEngine):
+class SimpleDecisionEngine[T](DecisionEngine[T]):
     """simple decision engine."""
 
-    def __init__(self, meta: list[Meta], node_map: Mapping[str, DecisionNode]) -> None:
+    def __init__(self, meta: list[Meta], node_map: Mapping[str, DecisionNode[T]]) -> None:
         """Init."""
         self._meta = meta
         self._node_map = node_map
 
     @override
-    async def process(self, ctx: Context) -> AsyncGenerator[Result | Request, None]:
+    async def process(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
         while True:
             curr_meta = ctx.checker.meta
             if curr_meta.name not in self._node_map:
