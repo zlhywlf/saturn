@@ -4,7 +4,6 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
 import logging
-import logging.config
 import pathlib
 
 from pydantic import Field, ValidationInfo, computed_field, field_validator
