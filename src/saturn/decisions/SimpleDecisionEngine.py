@@ -18,7 +18,7 @@ from saturn.models.dto.decisions.Result import Result
 class SimpleDecisionEngine(DecisionEngine):
     """simple decision engine."""
 
-    def __init__(self, meta: Meta, node_map: Mapping[str, DecisionNode]) -> None:
+    def __init__(self, meta: list[Meta], node_map: Mapping[str, DecisionNode]) -> None:
         """Init."""
         self._meta = meta
         self._node_map = node_map
@@ -27,18 +27,18 @@ class SimpleDecisionEngine(DecisionEngine):
     async def process(self, ctx: Context) -> AsyncGenerator[Result | Request, None]:
         while True:
             curr_meta = ctx.checker.meta
-            self._decide(ctx.checker)
-            meta = ctx.checker.meta
-            if meta is curr_meta or meta.name not in self._node_map:
+            if curr_meta.name not in self._node_map:
                 break
-            node = self._node_map[meta.name]
+            node = self._node_map[curr_meta.name]
             async for result in node.handle(ctx):
                 yield result
+            self._decide(ctx.checker)
+            next_meta = ctx.checker.meta
+            if next_meta is curr_meta:
+                break
 
     def _decide(self, checker: MetaChecker) -> None:
-        if not self._meta.meta:
-            return
-        for meta in self._meta.meta:
+        for meta in self._meta:
             if meta.type == checker.type:
                 checker.meta = meta
                 return

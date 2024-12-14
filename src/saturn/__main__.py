@@ -19,6 +19,7 @@ def main() -> None:
         logging.config.fileConfig(config.log_path)
     if cli.start:
         ProcessUtil(cli.start.app, config).start()
+        return
     if cli.stop:
         ProcessUtil(cli.stop.app, config).stop()
 

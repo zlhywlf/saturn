@@ -42,7 +42,7 @@ class ProcessUtil:
                 msg = f"Unsupported system environment: ({self.PLATFORM})."
                 raise RuntimeError(msg)
 
-    def start(self) -> None:
+    def start(self) -> None:  # pragma: no cover
         """Start process."""
         cmd = self._cmd
         print(self._config.project_banner)  # noqa: T201

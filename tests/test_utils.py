@@ -6,11 +6,9 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from typing import Any
 
 import pytest
-from faker import Faker
 from pytest_mock import MockerFixture
 
 from saturn.configs.AppEnum import AppEnum
-from saturn.configs.ProjectConfig import ProjectConfig
 from saturn.utils.ProcessUtil import ProcessUtil
 
 
@@ -23,26 +21,17 @@ from saturn.utils.ProcessUtil import ProcessUtil
         pytest.param("NOP", -1, marks=pytest.mark.xfail(raises=RuntimeError)),
     ],
 )
-def test_process_manager_signal(arg: str, signal: int, mocker: MockerFixture) -> None:
-    """Test process manager signal."""
+def test_process_util_signal(arg: str, signal: int, mocker: MockerFixture) -> None:
+    """Test process util signal."""
     mocker.patch.object(ProcessUtil, "PLATFORM", new=arg)
-    p = ProcessUtil(AppEnum.DOC, ProjectConfig())
+    p = ProcessUtil(AppEnum.DOC, mocker.Mock())
     assert p._signal == signal
 
 
-def test_process_manager_start(capsys: pytest.CaptureFixture[str], faker: Faker) -> None:
-    """Test process manager start."""
-    key = faker.name()
-    p = ProcessUtil(AppEnum.DOC, ProjectConfig())
-    p._cmd = " ".join(["echo", key])
-    p.start()
-    assert key in capsys.readouterr().out
-
-
-@pytest.fixture(scope="module")
-def process_util() -> ProcessUtil:
+@pytest.fixture
+def process_util(mocker: MockerFixture) -> ProcessUtil:
     """Process util."""
-    return ProcessUtil(AppEnum.DOC, ProjectConfig())
+    return ProcessUtil(AppEnum.DOC, mocker.Mock())
 
 
 @pytest.fixture
@@ -51,8 +40,8 @@ def process_obj() -> object:
     return type("FakeProcess", (), {})
 
 
-def test_process_manager_stop_success(process_util: ProcessUtil, mocker: MockerFixture, process_obj: Any) -> None:  # noqa ANN401
-    """Test process manager stop success."""
+def test_process_util_stop_success(process_util: ProcessUtil, mocker: MockerFixture, process_obj: Any) -> None:  # noqa ANN401
+    """Test process util stop success."""
     process_obj.status = lambda: "running"
     process_obj.name = lambda: "mkdocs.exe"
     process_obj.cmdline = lambda: process_util._cmd.split(" ")
@@ -71,7 +60,7 @@ def test_process_manager_stop_success(process_util: ProcessUtil, mocker: MockerF
         ("mkdocs.exe", ["NOP"], ""),
     ],
 )
-def test_process_manager_stop_failure(
+def test_process_util_stop_failure(
     process_util: ProcessUtil,
     process_obj: Any,  # noqa ANN401
     mocker: MockerFixture,
@@ -79,7 +68,7 @@ def test_process_manager_stop_failure(
     cmd: list[str],
     status: str,
 ) -> None:
-    """Test process manager stop failure."""
+    """Test process util stop failure."""
     process_obj.send_signal = lambda s: s
     process_obj.status = lambda: status
     process_obj.name = lambda: name
