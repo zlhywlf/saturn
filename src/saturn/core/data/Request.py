@@ -12,3 +12,7 @@ class Request[T](ABC):
     @abstractmethod
     def revert(self) -> T:
         """Revert."""
+
+    def __call__(self) -> T:
+        """Revert."""
+        return self.revert()

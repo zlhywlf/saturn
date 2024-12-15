@@ -5,7 +5,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from typing import Any, override
 
-from scrapy import FormRequest as OriginRequest
+from scrapy import FormRequest, Request as OriginRequest
 
 from saturn.core.data.Request import Request
 
@@ -15,7 +15,7 @@ class ScrapyRequest(Request[OriginRequest]):
 
     def __init__(self, *, origin: OriginRequest | None = None, **kwargs: Any) -> None:
         """Init."""
-        self._request = origin if origin else OriginRequest(**kwargs)
+        self._request = origin if origin else FormRequest(**kwargs)
 
     @override
     def revert(self) -> OriginRequest:
