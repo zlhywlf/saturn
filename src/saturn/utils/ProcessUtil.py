@@ -22,7 +22,10 @@ class ProcessUtil:
     """process util."""
 
     PLATFORM: ClassVar[str] = platform.system()
-    APPS: ClassVar[dict[AppEnum, str]] = {AppEnum.DOC: "mkdocs serve -a 0.0.0.0:58000"}
+    APPS: ClassVar[dict[AppEnum, str]] = {
+        AppEnum.DOC: "mkdocs serve -a 0.0.0.0:58000",
+        AppEnum.SCRAPY: "python -m saturn.frameworks.scrapy",
+    }
 
     def __init__(self, app: AppEnum, config: ProjectConfig) -> None:
         """Init."""

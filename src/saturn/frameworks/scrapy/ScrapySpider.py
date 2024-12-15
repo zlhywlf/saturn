@@ -74,4 +74,4 @@ class ScrapySpider(Spider):
 
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
-        yield len(response.text)
+        yield {"len": len(response.text)}
