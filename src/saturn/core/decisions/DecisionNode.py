@@ -11,10 +11,10 @@ from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.Result import Result
 
 
-class DecisionNode[T](ABC):
+class DecisionNode(ABC):
     """decision node."""
 
     @abstractmethod
-    async def handle(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
+    async def handle[T](self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
         """Handle."""
         yield Result(id=0, name="", type=None, content=None)

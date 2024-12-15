@@ -11,10 +11,10 @@ from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.Result import Result
 
 
-class DecisionEngine[T](ABC):
+class DecisionEngine(ABC):
     """decision engine."""
 
     @abstractmethod
-    async def process(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
+    async def process[T](self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
         """Process."""
         yield Result(id=0, name="", type=None, content=None)
