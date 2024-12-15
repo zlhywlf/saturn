@@ -15,7 +15,9 @@ from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 
 from saturn.configs import scrapy_config
+from saturn.core.decisions.nodes.ListPageDecisionNode import ListPageDecisionNode
 from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
+from saturn.core.decisions.nodes.SavePageDecisionNode import SavePageDecisionNode
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyRequestFactory import ScrapyRequestFactory
@@ -40,7 +42,11 @@ class ScrapySpider(Spider):
         self._qp = qp
         self._idle_start_time = 0
         request_factory = ScrapyRequestFactory()
-        self._node_map = {"PagingDecisionNode": PagingDecisionNode(request_factory)}
+        self._node_map = {
+            "PagingDecisionNode": PagingDecisionNode(request_factory),
+            "ListPageDecisionNode": ListPageDecisionNode(request_factory),
+            "SavePageDecisionNode": SavePageDecisionNode(request_factory),
+        }
 
     @override
     def start_requests(self) -> Iterable[Request]:

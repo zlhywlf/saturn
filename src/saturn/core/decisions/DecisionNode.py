@@ -27,4 +27,4 @@ class DecisionNode[T](ABC):
     @abstractmethod
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
         """Handle."""
-        yield Result(id=0, name="", type=None, content=None)
+        yield Result(name="", type=None, content=None)

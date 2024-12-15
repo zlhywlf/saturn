@@ -17,4 +17,4 @@ class DecisionEngine[T](ABC):
     @abstractmethod
     async def process(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
         """Process."""
-        yield Result(id=0, name="", type=None, content=None)
+        yield Result(name="", type=None, content=None)
