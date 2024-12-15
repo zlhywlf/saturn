@@ -28,7 +28,7 @@ class ListPageDecisionNode(DecisionNode):
                 yield Task(
                     id=0,
                     url=await ctx.response.urljoin(path),
-                    meta=meta.sub.model_dump(),
+                    meta=meta.sub,
                     headers={},
                     cookies={},
                     flags=[],

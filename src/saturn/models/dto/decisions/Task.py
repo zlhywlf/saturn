@@ -7,6 +7,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from saturn.models.dto.decisions.Meta import Meta
+
 
 class Task(BaseModel):
     """task."""
@@ -19,7 +21,7 @@ class Task(BaseModel):
     method: str = "GET"
     body: bytes = b""
     cookies: dict[str, str]
-    meta: dict[str, Any]
+    meta: Meta
     encoding: str = "utf-8"
     priority: int = 0
     dont_filter: bool = False

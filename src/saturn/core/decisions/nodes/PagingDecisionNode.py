@@ -46,7 +46,7 @@ class PagingDecisionNode(DecisionNode):
                     url=url,
                     method="POST",
                     body=f"pageNumber={page + 1}&pageSize={limit}".encode(),
-                    meta=meta.sub.model_dump(),
+                    meta=meta.sub,
                     headers={b"Content-Type": [b"application/x-www-form-urlencoded"]},
                     cookies={},
                     flags=[],
