@@ -4,16 +4,17 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
 import time
-from collections.abc import Iterable
+from collections.abc import AsyncGenerator, Iterable
 from typing import Any, Self, override
 
 from scrapy import FormRequest, Request, signals
 from scrapy.crawler import Crawler
 from scrapy.exceptions import DontCloseSpider
+from scrapy.http.response import Response
 from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 
-from saturn.configs.ScrapyConfig import ScrapyConfig
+from saturn.configs import scrapy_config
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.models.dto.decisions.Task import Task
 
@@ -21,12 +22,14 @@ from saturn.models.dto.decisions.Task import Task
 class ScrapySpider(Spider):
     """scrapy spider."""
 
+    name: str = "saturn"
+
     def __init__(self, qp: QueuePersistentSync, key: str, *args: Any, **kwargs: Any) -> None:
         """Init."""
         super().__init__(*args, **kwargs)
         self._key = key
         self._batch_size = 32
-        self._max_idle_time = 0
+        self._max_idle_time = 1
         self._qp = qp
         self._idle_start_time = 0
 
@@ -49,11 +52,10 @@ class ScrapySpider(Spider):
     @classmethod
     @override
     def from_crawler(cls, crawler: Crawler, *args: Any, **kwargs: Any) -> Self:
-        config = ScrapyConfig()
-        qp_cls = load_object(config.queue_persistent_cls)
+        qp_cls = load_object(scrapy_config.queue_persistent_cls)
         if not issubclass(qp_cls, QueuePersistentSync):
             raise RuntimeError
-        spider = super().from_crawler(crawler, *args, qp=qp_cls(), key=config.queue_key, **kwargs)
+        spider = super().from_crawler(crawler, *args, qp=qp_cls(), key=scrapy_config.queue_key, **kwargs)
         if isinstance(spider, ScrapySpider):
             crawler.signals.connect(spider.spider_idle, signal=signals.spider_idle)
         return spider
@@ -69,3 +71,7 @@ class ScrapySpider(Spider):
         if self._max_idle_time != 0 and idle_time > self._max_idle_time:
             return
         raise DontCloseSpider
+
+    @override
+    async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
+        yield len(response.text)
