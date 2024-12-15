@@ -30,3 +30,7 @@ class Queue[T](ABC):
     @abstractmethod
     def pop(self) -> Request[T] | None:
         """Pop."""
+
+    @abstractmethod
+    def clear(self) -> None:
+        """Clear."""

@@ -48,3 +48,7 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
     def pop(self) -> Request[OriginRequest] | None:
         results = self._qp.select(self._key)
         return self.decode_request(results) if results else None
+
+    @override
+    def clear(self) -> None:
+        self._qp.delete(self._key)

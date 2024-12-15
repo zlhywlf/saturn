@@ -20,3 +20,7 @@ class QueuePersistentSync(ABC):
     @abstractmethod
     def select(self, key: str) -> bytes | None:
         """Select."""
+
+    @abstractmethod
+    def delete(self, key: str) -> bytes | None:
+        """Delete."""
