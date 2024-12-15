@@ -6,7 +6,6 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from typing import Any, override
 
 from pydantic import TypeAdapter
-from scrapy import Spider
 
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
@@ -16,10 +15,9 @@ from saturn.models.dto.decisions.Task import Task
 class ScrapyPriorityQueue(Queue):
     """scrapy priority queue."""
 
-    def __init__(self, qp: QueuePersistentSync, spider: Spider, key: str) -> None:
+    def __init__(self, qp: QueuePersistentSync, key: str) -> None:
         """Init."""
         self._type_adapter = TypeAdapter(dict[str, Any])
-        self._spider = spider
         self._key = key
         self._qp = qp
 

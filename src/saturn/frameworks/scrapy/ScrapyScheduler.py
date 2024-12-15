@@ -68,7 +68,7 @@ class ScrapyScheduler(BaseScheduler):
     @override
     def open(self, spider: Spider) -> Deferred[None] | None:
         self._spider = spider
-        self._queue = ScrapyPriorityQueue(self._qp, spider, self._queue_key)
+        self._queue = ScrapyPriorityQueue(self._qp, self._queue_key)
         if self._flush_on_start:
             self.flush()
         if len(self.queue):
