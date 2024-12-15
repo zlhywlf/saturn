@@ -23,11 +23,11 @@ class ListPageDecisionNode[T](DecisionNode[T]):
         ctx.checker.type = 1 if config.needed else 2
         paths = await ctx.response.extract_by_xpath(config.paths)
         names = await ctx.response.extract_by_xpath(config.names)
-        if meta.meta and paths and names:
+        if meta.sub and paths and names:
             for path, name in zip(paths, names, strict=False):
                 yield self.request_factory.create(
                     url=await ctx.response.urljoin(path),
-                    meta={"decision": meta.meta[0], "file_name": name},
+                    meta={"decision": meta.sub, "file_name": name},
                 )
 
     class Config(NodeConfig):

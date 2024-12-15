@@ -90,7 +90,7 @@ class ScrapySpider(Spider):
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
         meta = Meta.model_validate(response.meta.get("decision", {}))
-        engine = SimpleDecisionEngine[Request](meta.meta, self._node_map)
+        engine = SimpleDecisionEngine[Request](meta.meta or [], self._node_map)
         ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
         async for result in engine.process(ctx):
             yield result()
