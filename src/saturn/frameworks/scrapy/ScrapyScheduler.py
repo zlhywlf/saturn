@@ -60,7 +60,7 @@ class ScrapyScheduler(BaseScheduler):
             "dupe_filter": ScrapyRFPDupeFilter.from_crawler(crawler),
             "queue_key": config.queue_key,
         }
-        qp_cls = load_object(config.rfp_persistent_cls)
+        qp_cls = load_object(config.queue_persistent_cls)
         if not issubclass(qp_cls, QueuePersistentSync):
             raise RuntimeError
         return cls(qp=qp_cls(), **kwargs)  # type: ignore [arg-type]

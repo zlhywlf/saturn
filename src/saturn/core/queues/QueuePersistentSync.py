@@ -18,7 +18,7 @@ class QueuePersistentSync(ABC):
         """Save."""
 
     @abstractmethod
-    def select(self, key: str) -> bytes | None:
+    def select(self, key: str) -> list[bytes] | None:
         """Select."""
 
     @abstractmethod
