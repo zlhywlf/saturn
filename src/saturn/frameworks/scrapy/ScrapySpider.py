@@ -33,7 +33,7 @@ class ScrapySpider(Spider):
     @override
     def start_requests(self) -> Iterable[Request]:
         found = 0
-        data = self._qp.select(self._key) or []
+        data = self._qp.select(self._key, 0, self._batch_size - 1, -self._batch_size, -1) or []
         for d in data:
             task = Task.model_validate_json(d)
             url = task.url
