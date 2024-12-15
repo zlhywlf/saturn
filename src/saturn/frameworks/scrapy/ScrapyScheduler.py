@@ -19,7 +19,7 @@ from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyPriorityQueue import ScrapyPriorityQueue
 from saturn.frameworks.scrapy.ScrapyRequest import ScrapyRequest
-from saturn.frameworks.scrapy.ScrapyRFPDupeFilter import ScrapyRFPDupeFilter
+from saturn.frameworks.scrapy.ScrapyRfpDupeFilter import ScrapyRfpDupeFilter
 
 
 class ScrapyScheduler(BaseScheduler):
@@ -57,7 +57,7 @@ class ScrapyScheduler(BaseScheduler):
             "flush_on_start": settings.getbool("SCHEDULER_FLUSH_ON_START"),
             "idle_before_close": settings.getint("SCHEDULER_IDLE_BEFORE_CLOSE"),
             "stats": crawler.stats,
-            "dupe_filter": ScrapyRFPDupeFilter.from_crawler(crawler),
+            "dupe_filter": ScrapyRfpDupeFilter.from_crawler(crawler),
             "queue_key": config.queue_key,
         }
         qp_cls = load_object(config.queue_persistent_cls)
@@ -77,7 +77,7 @@ class ScrapyScheduler(BaseScheduler):
 
     def flush(self) -> None:
         """Flash."""
-        if isinstance(self._dupe_filter, ScrapyRFPDupeFilter):
+        if isinstance(self._dupe_filter, ScrapyRfpDupeFilter):
             self._dupe_filter.clear()
         self.queue.clear()
 

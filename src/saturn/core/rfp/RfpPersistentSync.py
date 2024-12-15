@@ -6,7 +6,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from abc import ABC, abstractmethod
 
 
-class RFPPersistentSync(ABC):
+class RfpPersistentSync(ABC):
     """request fingerprint persistent."""
 
     @abstractmethod

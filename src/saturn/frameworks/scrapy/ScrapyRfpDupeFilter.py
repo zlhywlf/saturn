@@ -18,15 +18,15 @@ from twisted.internet.defer import Deferred
 from w3lib.url import canonicalize_url
 
 from saturn.configs.ScrapyConfig import ScrapyConfig
-from saturn.core.rfp.RFPPersistentSync import RFPPersistentSync
+from saturn.core.rfp.RfpPersistentSync import RfpPersistentSync
 
 
-class ScrapyRFPDupeFilter(BaseDupeFilter):
+class ScrapyRfpDupeFilter(BaseDupeFilter):
     """scrapy request fingerprint dupe filter."""
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, *, rp: RFPPersistentSync, key: str, debug: bool = False) -> None:
+    def __init__(self, *, rp: RfpPersistentSync, key: str, debug: bool = False) -> None:
         """Init."""
         self._rp = rp
         self._debug = debug
@@ -39,7 +39,7 @@ class ScrapyRFPDupeFilter(BaseDupeFilter):
         config = ScrapyConfig()
         debug = crawler.settings.getbool("DUPEFILTER_DEBUG")
         rfp_cls = load_object(config.rfp_persistent_cls)
-        if not issubclass(rfp_cls, RFPPersistentSync):
+        if not issubclass(rfp_cls, RfpPersistentSync):
             raise RuntimeError
         key = config.dupe_filter_key % {"timestamp": int(time.time())}
         cls.logger.info(f"dupe filter key: {key}")
