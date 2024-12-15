@@ -12,7 +12,7 @@ from scrapy.utils.request import request_from_dict
 from saturn.core.data.Request import Request
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueueClient import QueueClient
-from saturn.frameworks.scrapy.ScrapyRequestFactory import ScrapyRequestFactory
+from saturn.frameworks.scrapy.ScrapyRequest import ScrapyRequest
 
 
 class ScrapyPriorityQueue(Queue[OriginRequest]):
@@ -24,7 +24,6 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
         self._spider = spider
         self._key = key % {"spider": spider.name}
         self._client = client
-        self._req_factory = ScrapyRequestFactory()
 
     @override
     def encode_request(self, request: Request[OriginRequest]) -> bytes:
@@ -34,7 +33,7 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
     @override
     def decode_request(self, encoded_request: bytes) -> Request[OriginRequest]:
         obj = self._type_adapter.validate_json(encoded_request)
-        return self._req_factory.create(request_from_dict(obj, spider=self._spider))
+        return ScrapyRequest(request_from_dict(obj, spider=self._spider))
 
     @override
     def __len__(self) -> int:
