@@ -14,7 +14,7 @@ from saturn._version import version
 logger = logging.getLogger(__name__)
 
 
-class ProjectConfig(BaseSettings, env_prefix="SATURN_", env_file=".env", env_file_encoding="utf-8"):
+class ProjectConfig(BaseSettings, env_prefix="SATURN_PROJECT_", env_file=".env", env_file_encoding="utf-8"):
     """project config."""
 
     banner_path: pathlib.Path = Field(default=pathlib.Path.cwd() / "banner.txt", description="banner file path")
