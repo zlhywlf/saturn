@@ -24,7 +24,8 @@ class ListPageDecisionNode(DecisionNode):
         paths = await ctx.response.extract_by_xpath(config.paths)
         names = await ctx.response.extract_by_xpath(config.names)
         if meta.sub and paths and names:
-            for path, _ in zip(paths, names, strict=False):
+            for path, name in zip(paths, names, strict=False):
+                meta.sub.file_name = name
                 yield Task(
                     id=0,
                     url=await ctx.response.urljoin(path),

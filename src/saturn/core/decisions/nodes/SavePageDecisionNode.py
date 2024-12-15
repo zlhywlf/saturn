@@ -21,5 +21,5 @@ class SavePageDecisionNode(DecisionNode):
         yield Result(
             type=(await ctx.response.headers).get("Content-Type", "unknown"),
             content=await ctx.response.body,
-            name=(await ctx.response.meta).get("file_name", ""),
+            name=ctx.checker.meta.file_name or "",
         )

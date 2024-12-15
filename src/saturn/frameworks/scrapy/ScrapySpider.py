@@ -91,4 +91,5 @@ class ScrapySpider(Spider):
         async for result in engine.process(ctx):
             if isinstance(result, Task):
                 yield request_from_dict(result.model_dump(), spider=self)
+                continue
             yield result

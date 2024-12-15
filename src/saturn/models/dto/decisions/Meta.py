@@ -17,3 +17,4 @@ class Meta(BaseModel):
     config: str
     meta: list["Meta"] | None = None
     sub: Optional["Meta"] = None
+    file_name: str | None = None

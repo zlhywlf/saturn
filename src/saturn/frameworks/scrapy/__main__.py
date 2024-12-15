@@ -15,7 +15,14 @@ def main() -> None:
     """Main."""
     os.environ.setdefault(ENVVAR, __name__)
     settings = get_project_settings()
-    settings.setdict({"SPIDER_MODULES": saturn.frameworks.scrapy.ScrapySpider.__name__}, priority="project")
+    settings.setdict(
+        {
+            "SPIDER_MODULES": saturn.frameworks.scrapy.ScrapySpider.__name__,
+            "ITEM_PIPELINES": {"saturn.frameworks.scrapy.pipelines.SaveResultLocal.SaveResultLocal": 1},
+            "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
+        },
+        priority="project",
+    )
     execute(["scrapy", "crawl", "saturn"], settings)
 
 
