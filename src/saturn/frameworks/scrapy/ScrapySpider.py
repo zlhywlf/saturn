@@ -15,7 +15,14 @@ from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 
 from saturn.configs import scrapy_config
+from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
+from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
+from saturn.frameworks.scrapy.ScrapyRequestFactory import ScrapyRequestFactory
+from saturn.frameworks.scrapy.ScrapyResponse import ScrapyResponse
+from saturn.models.dto.decisions.Context import Context
+from saturn.models.dto.decisions.Meta import Meta
+from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Task import Task
 
 
@@ -32,6 +39,8 @@ class ScrapySpider(Spider):
         self._max_idle_time = 1
         self._qp = qp
         self._idle_start_time = 0
+        request_factory = ScrapyRequestFactory()
+        self._node_map = {"PagingDecisionNode": PagingDecisionNode(request_factory)}
 
     @override
     def start_requests(self) -> Iterable[Request]:
@@ -74,4 +83,8 @@ class ScrapySpider(Spider):
 
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
-        yield {"len": len(response.text)}
+        meta = Meta.model_validate(response.meta.get("decision", {}))
+        engine = SimpleDecisionEngine[Request](meta.meta, self._node_map)
+        ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
+        async for result in engine.process(ctx):
+            yield result

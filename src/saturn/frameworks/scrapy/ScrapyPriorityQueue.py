@@ -33,7 +33,7 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
     @override
     def decode_request(self, encoded_request: bytes) -> Request[OriginRequest]:
         obj = self._type_adapter.validate_json(encoded_request)
-        return ScrapyRequest(request_from_dict(obj, spider=self._spider))
+        return ScrapyRequest(origin=request_from_dict(obj, spider=self._spider))
 
     @override
     def __len__(self) -> int:

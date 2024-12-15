@@ -3,7 +3,7 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
-from typing import override
+from typing import Any, override
 
 from scrapy import Request as OriginRequest
 
@@ -16,5 +16,5 @@ class ScrapyRequestFactory(RequestFactory[OriginRequest]):
     """scrapy request factory."""
 
     @override
-    def create(self, request: OriginRequest) -> Request[OriginRequest]:
-        return ScrapyRequest(request)
+    def create(self, **kwargs: Any) -> Request[OriginRequest]:
+        return ScrapyRequest(**kwargs)

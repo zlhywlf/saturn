@@ -93,7 +93,7 @@ class ScrapyScheduler(BaseScheduler):
             return False
         if self._stats:
             self._stats.inc_value("scheduler/enqueued/redis", spider=self._spider)
-        self.queue.push(ScrapyRequest(request))
+        self.queue.push(ScrapyRequest(origin=request))
         return True
 
     @override
