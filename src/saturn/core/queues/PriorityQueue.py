@@ -12,8 +12,8 @@ from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.models.dto.decisions.Task import Task
 
 
-class ScrapyPriorityQueue(Queue):
-    """scrapy priority queue."""
+class PriorityQueue(Queue):
+    """priority queue."""
 
     def __init__(self, qp: QueuePersistentSync, key: str) -> None:
         """Init."""

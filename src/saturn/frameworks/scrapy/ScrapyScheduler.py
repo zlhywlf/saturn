@@ -16,9 +16,9 @@ from scrapy.utils.request import request_from_dict
 from twisted.internet.defer import Deferred
 
 from saturn.configs import scrapy_config
+from saturn.core.queues.PriorityQueue import PriorityQueue
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
-from saturn.frameworks.scrapy.ScrapyPriorityQueue import ScrapyPriorityQueue
 from saturn.frameworks.scrapy.ScrapyRfpDupeFilter import ScrapyRfpDupeFilter
 from saturn.models.dto.decisions.Task import Task
 
@@ -68,7 +68,7 @@ class ScrapyScheduler(BaseScheduler):
     @override
     def open(self, spider: Spider) -> Deferred[None] | None:
         self._spider = spider
-        self._queue = ScrapyPriorityQueue(self._qp, self._queue_key)
+        self._queue = PriorityQueue(self._qp, self._queue_key)
         if self._flush_on_start:
             self.flush()
         if len(self.queue):
