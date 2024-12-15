@@ -10,8 +10,14 @@ from scrapy.utils.project import ENVVAR, get_project_settings
 
 import saturn.frameworks.scrapy.ScrapySpider
 
-if __name__ == "__main__":
+
+def main() -> None:
+    """Main."""
     os.environ.setdefault(ENVVAR, __name__)
     settings = get_project_settings()
     settings.setdict({"SPIDER_MODULES": saturn.frameworks.scrapy.ScrapySpider.__name__}, priority="project")
     execute(["scrapy", "crawl", "saturn"], settings)
+
+
+if __name__ == "__main__":
+    main()

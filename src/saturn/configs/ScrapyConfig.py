@@ -11,6 +11,6 @@ class ScrapyConfig(BaseSettings, env_prefix="SATURN_SCRAPY_", env_file=".env", e
     """scrapy config."""
 
     dupe_filter_key: str = Field(default="dupe_filter:%(timestamp)s")
-    queue_key: str = Field(default="%(spider)s:requests")
+    queue_key: str = Field(default="saturn:requests")
     rfp_persistent_cls: str = Field(default="saturn.core.rfp.RFPPersistentSync.RFPPersistentSync")
     queue_persistent_cls: str = Field(default="saturn.core.queues.RedisQueuePersistentSync.RedisQueuePersistentSync")

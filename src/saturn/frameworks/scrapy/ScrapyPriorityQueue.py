@@ -22,7 +22,7 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
         """Init."""
         self._type_adapter = TypeAdapter(dict[str, Any])
         self._spider = spider
-        self._key = key % {"spider": spider.name}
+        self._key = key
         self._qp = qp
 
     @override
