@@ -14,7 +14,7 @@ from scrapy.statscollectors import StatsCollector
 from scrapy.utils.misc import load_object
 from twisted.internet.defer import Deferred
 
-from saturn.configs.ScrapyConfig import ScrapyConfig
+from saturn.configs import scrapy_config
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyPriorityQueue import ScrapyPriorityQueue
@@ -50,7 +50,6 @@ class ScrapyScheduler(BaseScheduler):
     @classmethod
     @override
     def from_crawler(cls, crawler: Crawler) -> Self:
-        config = ScrapyConfig()
         settings = crawler.settings
         kwargs = {
             "persist": settings.getbool("SCHEDULER_PERSIST"),
@@ -58,9 +57,9 @@ class ScrapyScheduler(BaseScheduler):
             "idle_before_close": settings.getint("SCHEDULER_IDLE_BEFORE_CLOSE"),
             "stats": crawler.stats,
             "dupe_filter": ScrapyRfpDupeFilter.from_crawler(crawler),
-            "queue_key": config.queue_key,
+            "queue_key": scrapy_config.queue_key,
         }
-        qp_cls = load_object(config.queue_persistent_cls)
+        qp_cls = load_object(scrapy_config.queue_persistent_cls)
         if not issubclass(qp_cls, QueuePersistentSync):
             raise RuntimeError
         return cls(qp=qp_cls(), **kwargs)  # type: ignore [arg-type]

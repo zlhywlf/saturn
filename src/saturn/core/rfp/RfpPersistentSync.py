@@ -14,7 +14,7 @@ class RfpPersistentSync(ABC):
         """Save."""
 
     @abstractmethod
-    def delete(self, key: str) -> bytes | None:
+    def delete(self, key: str) -> None:
         """Delete."""
 
     @abstractmethod

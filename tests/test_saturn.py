@@ -14,7 +14,7 @@ def test_project_config_has_log_path(mocker: MockerFixture, *, has: bool) -> Non
     """Test project config has log path."""
     mocker.patch("saturn.__main__.Cli", return_value=mocker.Mock(start=None, stop=None))
     log_path = mocker.Mock(exists=mocker.Mock(return_value=has))
-    mocker.patch("saturn.__main__.ProjectConfig", return_value=mocker.Mock(log_path=log_path))
+    mocker.patch("saturn.__main__.project_config", mocker.Mock(log_path=log_path))
     file_config = mocker.Mock()
     mocker.patch("saturn.__main__.logging.config", fileConfig=file_config)
     main()
@@ -27,8 +27,8 @@ def test_project_config_has_log_path(mocker: MockerFixture, *, has: bool) -> Non
 def test_start_and_stop(mocker: MockerFixture) -> None:
     """Test start and stop."""
     mocker.patch(
-        "saturn.__main__.ProjectConfig",
-        return_value=mocker.Mock(log_path=mocker.Mock(exists=mocker.Mock(return_value=False))),
+        "saturn.__main__.project_config",
+        mocker.Mock(log_path=mocker.Mock(exists=mocker.Mock(return_value=False))),
     )
     start = mocker.Mock(app=mocker.Mock())
     stop = mocker.Mock(app=mocker.Mock())

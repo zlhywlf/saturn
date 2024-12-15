@@ -17,7 +17,7 @@ from scrapy.utils.python import to_unicode
 from twisted.internet.defer import Deferred
 from w3lib.url import canonicalize_url
 
-from saturn.configs.ScrapyConfig import ScrapyConfig
+from saturn.configs import scrapy_config
 from saturn.core.rfp.RfpPersistentSync import RfpPersistentSync
 
 
@@ -36,12 +36,11 @@ class ScrapyRfpDupeFilter(BaseDupeFilter):
     @classmethod
     @override
     def from_crawler(cls, crawler: Crawler) -> Self:
-        config = ScrapyConfig()
         debug = crawler.settings.getbool("DUPEFILTER_DEBUG")
-        rfp_cls = load_object(config.rfp_persistent_cls)
+        rfp_cls = load_object(scrapy_config.rfp_persistent_cls)
         if not issubclass(rfp_cls, RfpPersistentSync):
             raise RuntimeError
-        key = config.dupe_filter_key % {"timestamp": int(time.time())}
+        key = scrapy_config.dupe_filter_key % {"timestamp": int(time.time())}
         cls.logger.info(f"dupe filter key: {key}")
         return cls(rp=rfp_cls(), key=key, debug=debug)
 
