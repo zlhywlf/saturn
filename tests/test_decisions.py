@@ -6,7 +6,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from faker import Faker
 from pytest_mock import AsyncMockType, MockerFixture
 
-from saturn.decisions.SimpleDecisionEngine import SimpleDecisionEngine
+from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 
 
 async def test_simple_engine(mocker: MockerFixture, faker: Faker) -> None:
