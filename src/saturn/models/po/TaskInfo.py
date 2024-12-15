@@ -27,5 +27,10 @@ class TaskInfo(BaseTable):
             id=task_info.id,
             url=task_info.url,
             method=task_info.method,
-            meta=MetaInfo.load_meta(task_info.meta),
+            meta=MetaInfo.load_meta(task_info.meta).model_dump(),
+            headers={},
+            cookies={},
+            cb_kwargs={},
+            flags=[],
+            cls="",
         )

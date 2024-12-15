@@ -8,18 +8,24 @@ import re
 from collections.abc import AsyncGenerator
 from typing import override
 
-from saturn.core.data.Request import Request
+from pydantic import TypeAdapter
+
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.NodeConfig import NodeConfig
 from saturn.models.dto.decisions.Result import Result
+from saturn.models.dto.decisions.Task import Task
 
 
-class PagingDecisionNode[T](DecisionNode[T]):
+class PagingDecisionNode(DecisionNode):
     """paging decision node."""
 
+    def __init__(self) -> None:
+        """Init."""
+        self._type_adapter = TypeAdapter(dict[str, str])
+
     @override
-    async def handle(self, ctx: Context) -> AsyncGenerator[Result | Request[T], None]:
+    async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
         config = PagingDecisionNode.Config.model_validate_json(meta.config)
         ctx.checker.type = 1 if config.needed else 2
@@ -31,14 +37,21 @@ class PagingDecisionNode[T](DecisionNode[T]):
         url_match = re.search(config.url, text)
         url = url_match.group(1) if url_match else None
         pages = math.ceil(int(count) / int(limit))  # type:ignore  [arg-type]
-        if meta.sub:
+        if meta.sub and url:
             for page in range(pages):
                 if page > 1:
                     break
-                yield self.request_factory.create(
+                yield Task(
+                    id=0,
                     url=url,
-                    formdata={"pageNumber": f"{page + 1}", "pageSize": limit},
-                    meta={"decision": meta.sub},
+                    method="POST",
+                    body=f"pageNumber={page + 1}&pageSize={limit}".encode(),
+                    meta=meta.sub.model_dump(),
+                    headers={b"Content-Type": [b"application/x-www-form-urlencoded"]},
+                    cookies={},
+                    flags=[],
+                    cb_kwargs={},
+                    cls="scrapy.http.request.form.FormRequest",
                 )
 
     class Config(NodeConfig):

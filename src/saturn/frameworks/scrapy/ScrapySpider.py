@@ -7,12 +7,13 @@ import time
 from collections.abc import AsyncGenerator, Iterable
 from typing import Any, Self, override
 
-from scrapy import FormRequest, Request, signals
+from scrapy import Request, signals
 from scrapy.crawler import Crawler
 from scrapy.exceptions import DontCloseSpider
 from scrapy.http.response import Response
 from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
+from scrapy.utils.request import request_from_dict
 
 from saturn.configs import scrapy_config
 from saturn.core.decisions.nodes.ListPageDecisionNode import ListPageDecisionNode
@@ -20,7 +21,6 @@ from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
 from saturn.core.decisions.nodes.SavePageDecisionNode import SavePageDecisionNode
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
-from saturn.frameworks.scrapy.ScrapyRequestFactory import ScrapyRequestFactory
 from saturn.frameworks.scrapy.ScrapyResponse import ScrapyResponse
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.Meta import Meta
@@ -41,11 +41,10 @@ class ScrapySpider(Spider):
         self._max_idle_time = 1
         self._qp = qp
         self._idle_start_time = 0
-        request_factory = ScrapyRequestFactory()
         self._node_map = {
-            "PagingDecisionNode": PagingDecisionNode(request_factory),
-            "ListPageDecisionNode": ListPageDecisionNode(request_factory),
-            "SavePageDecisionNode": SavePageDecisionNode(request_factory),
+            "PagingDecisionNode": PagingDecisionNode(),
+            "ListPageDecisionNode": ListPageDecisionNode(),
+            "SavePageDecisionNode": SavePageDecisionNode(),
         }
 
     @override
@@ -54,10 +53,7 @@ class ScrapySpider(Spider):
         data = self._qp.select(self._key, 0, self._batch_size - 1, -self._batch_size, -1) or []
         for d in data:
             task = Task.model_validate_json(d)
-            url = task.url
-            method = task.method.upper()
-            meta = task.meta.model_dump()
-            reqs = FormRequest(url=url, method=method, meta={"decision": meta})
+            reqs = request_from_dict(task.model_dump(), spider=self)
             if reqs:
                 yield reqs
                 found += 1
@@ -89,8 +85,10 @@ class ScrapySpider(Spider):
 
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
-        meta = Meta.model_validate(response.meta.get("decision", {}))
-        engine = SimpleDecisionEngine[Request](meta.meta or [], self._node_map)
+        meta = Meta.model_validate(response.meta)
+        engine = SimpleDecisionEngine(meta.meta or [], self._node_map)
         ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
         async for result in engine.process(ctx):
-            yield result()
+            if isinstance(result, Task):
+                yield request_from_dict(result.model_dump(), spider=self)
+            yield result

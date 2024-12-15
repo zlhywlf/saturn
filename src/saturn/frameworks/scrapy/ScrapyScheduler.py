@@ -5,21 +5,22 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from typing import Self, override
 
-from scrapy import Request as OriginRequest
+from scrapy import Request
 from scrapy.core.scheduler import BaseScheduler
 from scrapy.crawler import Crawler
 from scrapy.dupefilters import BaseDupeFilter
 from scrapy.spiders import Spider
 from scrapy.statscollectors import StatsCollector
 from scrapy.utils.misc import load_object
+from scrapy.utils.request import request_from_dict
 from twisted.internet.defer import Deferred
 
 from saturn.configs import scrapy_config
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyPriorityQueue import ScrapyPriorityQueue
-from saturn.frameworks.scrapy.ScrapyRequest import ScrapyRequest
 from saturn.frameworks.scrapy.ScrapyRfpDupeFilter import ScrapyRfpDupeFilter
+from saturn.models.dto.decisions.Task import Task
 
 
 class ScrapyScheduler(BaseScheduler):
@@ -44,7 +45,7 @@ class ScrapyScheduler(BaseScheduler):
         self._stats = stats
         self._dupe_filter = dupe_filter
         self._spider: Spider | None = None
-        self._queue: Queue[OriginRequest] | None = None
+        self._queue: Queue | None = None
         self._queue_key = queue_key
 
     @classmethod
@@ -87,28 +88,28 @@ class ScrapyScheduler(BaseScheduler):
         return None
 
     @override
-    def enqueue_request(self, request: OriginRequest) -> bool:
+    def enqueue_request(self, request: Request) -> bool:
         if not request.dont_filter and self._spider and self.dupe_filter.request_seen(request):
             self.dupe_filter.log(request, self._spider)
             return False
         if self._stats:
             self._stats.inc_value("scheduler/enqueued/redis", spider=self._spider)
-        self.queue.push(ScrapyRequest(origin=request))
+        self.queue.push(Task.model_validate(request.to_dict()))
         return True
 
     @override
-    def next_request(self) -> OriginRequest | None:
-        request = self.queue.pop()
-        if request and self._stats:
+    def next_request(self) -> Request | None:
+        task = self.queue.pop()
+        if task and self._stats:
             self._stats.inc_value("scheduler/dequeued/redis", spider=self._spider)
-        return request.revert() if request else None
+        return request_from_dict(task.model_dump()) if task else None
 
     @override
     def has_pending_requests(self) -> bool:
         return len(self.queue) > 0
 
     @property
-    def queue(self) -> Queue[OriginRequest]:
+    def queue(self) -> Queue:
         """Queue."""
         if self._queue is None:
             msg = "The queue cannot be None"

@@ -3,9 +3,9 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
-from pydantic import BaseModel
+from typing import Any
 
-from saturn.models.dto.decisions.Meta import Meta
+from pydantic import BaseModel, Field
 
 
 class Task(BaseModel):
@@ -13,5 +13,16 @@ class Task(BaseModel):
 
     id: int
     url: str
-    method: str
-    meta: Meta
+    callback: str | None = None
+    errback: str | None = None
+    headers: dict[bytes, list[bytes]]
+    method: str = "GET"
+    body: bytes = b""
+    cookies: dict[str, str]
+    meta: dict[str, Any]
+    encoding: str = "utf-8"
+    priority: int = 0
+    dont_filter: bool = False
+    flags: list[str]
+    cb_kwargs: dict[str, Any]
+    cls: str = Field(..., serialization_alias="_class")

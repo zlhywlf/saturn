@@ -6,16 +6,14 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from typing import Any, override
 
 from pydantic import TypeAdapter
-from scrapy import Request as OriginRequest, Spider
-from scrapy.utils.request import request_from_dict
+from scrapy import Spider
 
-from saturn.core.data.Request import Request
 from saturn.core.queues.Queue import Queue
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
-from saturn.frameworks.scrapy.ScrapyRequest import ScrapyRequest
+from saturn.models.dto.decisions.Task import Task
 
 
-class ScrapyPriorityQueue(Queue[OriginRequest]):
+class ScrapyPriorityQueue(Queue):
     """scrapy priority queue."""
 
     def __init__(self, qp: QueuePersistentSync, spider: Spider, key: str) -> None:
@@ -26,28 +24,26 @@ class ScrapyPriorityQueue(Queue[OriginRequest]):
         self._qp = qp
 
     @override
-    def encode_request(self, request: Request[OriginRequest]) -> bytes:
-        obj = request.revert().to_dict(spider=self._spider)
-        return self._type_adapter.dump_json(obj)
+    def encode_task(self, task: Task) -> bytes:
+        return task.model_dump_json(by_alias=True).encode()
 
     @override
-    def decode_request(self, encoded_request: bytes) -> Request[OriginRequest]:
-        obj = self._type_adapter.validate_json(encoded_request)
-        return ScrapyRequest(origin=request_from_dict(obj, spider=self._spider))
+    def decode_task(self, encoded_task: bytes) -> Task:
+        return Task.model_validate_json(encoded_task)
 
     @override
     def __len__(self) -> int:
         return self._qp.get_length(self._key)
 
     @override
-    def push(self, request: Request[OriginRequest]) -> None:
-        data = self.encode_request(request)
-        self._qp.save(self._key, data, request.revert().priority)
+    def push(self, task: Task) -> None:
+        data = self.encode_task(task)
+        self._qp.save(self._key, data, task.priority)
 
     @override
-    def pop(self) -> Request[OriginRequest] | None:
+    def pop(self) -> Task | None:
         results = self._qp.select(self._key, 0, 0, -1, -1)
-        return self.decode_request(results[0]) if results else None
+        return self.decode_task(results[0]) if results else None
 
     @override
     def clear(self) -> None:
