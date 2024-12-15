@@ -15,6 +15,7 @@ from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 
 from saturn.configs import scrapy_config
+from saturn.core.data.Request import Request as RequestData
 from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
@@ -87,4 +88,6 @@ class ScrapySpider(Spider):
         engine = SimpleDecisionEngine[Request](meta.meta, self._node_map)
         ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
         async for result in engine.process(ctx):
+            if isinstance(result, RequestData):
+                yield result.revert()
             yield result

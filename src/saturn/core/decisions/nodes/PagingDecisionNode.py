@@ -31,14 +31,15 @@ class PagingDecisionNode[T](DecisionNode[T]):
         url_match = re.search(config.url, text)
         url = url_match.group(1) if url_match else None
         pages = math.ceil(int(count) / int(limit))  # type:ignore  [arg-type]
-        for page in range(pages):
-            if page > 1:
-                break
-            yield self.request_factory.create(
-                url=url,
-                formdata={"pageNumber": f"{page + 1}", "pageSize": limit},
-                meta={"decision": meta.meta[0]} if meta.meta else None,
-            )
+        if meta.meta:
+            for page in range(pages):
+                if page > 1:
+                    break
+                yield self.request_factory.create(
+                    url=url,
+                    formdata={"pageNumber": f"{page + 1}", "pageSize": limit},
+                    meta={"decision": meta.meta[0]},
+                )
 
     class Config(NodeConfig):
         """config."""

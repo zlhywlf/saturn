@@ -5,7 +5,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from typing import Any, override
 
-from scrapy import Request as OriginRequest
+from scrapy import FormRequest as OriginRequest
 
 from saturn.core.data.Request import Request
 
