@@ -15,11 +15,9 @@ from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 from scrapy.utils.request import request_from_dict
 
+import saturn.core.decisions.nodes as nodes
 from saturn.configs import scrapy_config
-from saturn.core.decisions.nodes.ListPageDecisionNode import ListPageDecisionNode
-from saturn.core.decisions.nodes.NextPageDecisionNode import NextPageDecisionNode
-from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
-from saturn.core.decisions.nodes.SavePageDecisionNode import SavePageDecisionNode
+from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyResponse import ScrapyResponse
@@ -27,6 +25,7 @@ from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.Meta import Meta
 from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Task import Task
+from saturn.utils.ClassUtil import get_special_modules
 
 
 class ScrapySpider(Spider):
@@ -42,12 +41,7 @@ class ScrapySpider(Spider):
         self._max_idle_time = 1
         self._qp = qp
         self._idle_start_time = 0
-        self._node_map = {
-            "PagingDecisionNode": PagingDecisionNode(),
-            "ListPageDecisionNode": ListPageDecisionNode(),
-            "SavePageDecisionNode": SavePageDecisionNode(),
-            "NextPageDecisionNode": NextPageDecisionNode(),
-        }
+        self._node_map = {m.__name__: m() for m in get_special_modules(nodes.__name__, DecisionNode)}  # type:ignore[abstract]
 
     @override
     def start_requests(self) -> Iterable[Request]:
