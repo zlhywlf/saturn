@@ -17,6 +17,7 @@ from scrapy.utils.request import request_from_dict
 
 from saturn.configs import scrapy_config
 from saturn.core.decisions.nodes.ListPageDecisionNode import ListPageDecisionNode
+from saturn.core.decisions.nodes.NextPageDecisionNode import NextPageDecisionNode
 from saturn.core.decisions.nodes.PagingDecisionNode import PagingDecisionNode
 from saturn.core.decisions.nodes.SavePageDecisionNode import SavePageDecisionNode
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
@@ -45,6 +46,7 @@ class ScrapySpider(Spider):
             "PagingDecisionNode": PagingDecisionNode(),
             "ListPageDecisionNode": ListPageDecisionNode(),
             "SavePageDecisionNode": SavePageDecisionNode(),
+            "NextPageDecisionNode": NextPageDecisionNode(),
         }
 
     @override
