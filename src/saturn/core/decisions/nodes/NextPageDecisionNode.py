@@ -24,6 +24,8 @@ class NextPageDecisionNode(DecisionNode):
         next_paths = await ctx.response.extract_by_xpath(config.next_path)
         if next_paths:
             for path in next_paths:
+                if not path.startswith("/"):
+                    continue
                 yield Task(
                     id=0,
                     url=await ctx.response.urljoin(path),
