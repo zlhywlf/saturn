@@ -35,17 +35,17 @@ class PagingDecisionNode(DecisionNode):
         count_match = re.search(config.count, text)
         count = count_match.group(1) if count_match else None
         url_match = re.search(config.url, text)
-        url = url_match.group(1) if url_match else None
+        url = url_match.group(1) if url_match.group() else None
         pages = math.ceil(int(count) / int(limit))  # type:ignore  [arg-type]
-        if meta.sub and url:
+        if meta.sub:
             for page in range(pages):
                 if page > 1:
                     break
                 yield Task(
                     id=0,
-                    url=url,
-                    method="POST",
-                    body=f"pageNumber={page + 1}&pageSize={limit}".encode(),
+                    url=url if url else (await ctx.response.urljoin("")),
+                    method=config.method,
+                    body=(config.body % {"page": page + 1, "limit": limit}).encode(),
                     meta=meta.sub,
                     headers={b"Content-Type": [b"application/x-www-form-urlencoded"]},
                     cookies={},
@@ -60,3 +60,5 @@ class PagingDecisionNode(DecisionNode):
         limit: str
         count: str
         url: str
+        body: str
+        method: str
