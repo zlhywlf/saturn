@@ -24,7 +24,9 @@ class NextPageDecisionNode(DecisionNode):
         next_paths = await ctx.response.extract_by_xpath(config.next_path)
         if next_paths:
             for path in next_paths:
-                if (not path.startswith(("/", "http", "?")) and not path.endswith("htm")) and ".aspx" not in path:
+                if ((not path.startswith(("/", "http", "?")) and
+                     not path.endswith(("htm", "html"))) and
+                    all(k not in path for k in [".aspx", ".jspx"])):
                     continue
                 yield Task(
                     id=0,
