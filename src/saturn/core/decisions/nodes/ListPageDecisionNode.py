@@ -50,8 +50,8 @@ class ListPageDecisionNode(DecisionNode):
             url = None
             if selector.root.tag == "a":
                 url = await self._handle_a(config, selector)
-            if selector.root.tag == "div" or selector.root.tag == "li":
-                url = await self._handle_div(selector)
+            if any(selector.root.tag == tag for tag in ["div", "li", "span"]):
+                url = await self._handle_div(config, selector)
             if url and next_meta:
                 yield Task(
                     id=0,
@@ -78,9 +78,9 @@ class ListPageDecisionNode(DecisionNode):
             return config.query % {"page": match.group()}
         return None
 
-    async def _handle_div(self, selector: Selector) -> str | None:
+    async def _handle_div(self, config: Config, selector: Selector) -> str | None:
         if match := self._full_url_pattern.search(selector.attrib.get("onclick") or ""):
             return match.group()
         if match := self._relative_url_pattern.search(selector.attrib.get("onclick") or ""):
             return match.group()
-        return None
+        return await self._handle_a_javascript(config, selector)
