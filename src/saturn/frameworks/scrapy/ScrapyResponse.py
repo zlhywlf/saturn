@@ -45,3 +45,8 @@ class ScrapyResponse(Response):
     @override
     async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
         return self._response.xpath(query)
+
+    @property
+    @override
+    async def url(self) -> str:
+        return self._response.url

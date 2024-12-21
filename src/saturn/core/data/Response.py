@@ -39,3 +39,8 @@ class Response(ABC):
     @abstractmethod
     async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
         """Extract by xpath."""
+
+    @property
+    @abstractmethod
+    async def url(self) -> str:
+        """Url."""

@@ -6,6 +6,8 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from collections.abc import AsyncGenerator
 from typing import override
 
+from parsel.selector import Selector
+
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.NodeConfig import NodeConfig
@@ -18,17 +20,25 @@ class ListPageDecisionNode(DecisionNode):
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
+        headers = await ctx.response.headers
+        content_type = headers.get("Content-Type", "unknown")
+        if b"html" in content_type:
+            async for result in self._handle_html(ctx):
+                yield result
+
+    async def _handle_html(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
         config = ListPageDecisionNode.Config.model_validate_json(meta.config)
         ctx.checker.type = 1 if config.needed else 2
-        paths = await ctx.response.extract_by_xpath(config.paths)
-        names = await ctx.response.extract_by_xpath(config.names)
-        if meta.sub and paths and names:
-            for path, name in zip(paths, names, strict=False):
-                meta.sub.file_name = name
+        selectors = await ctx.response.extract_by_xpath(config.paths)
+        for selector in selectors:
+            url = None
+            if selector.root.tag == "a":
+                url = await self._handle_a(selector)
+            if url:
                 yield Task(
                     id=0,
-                    url=await ctx.response.urljoin(path),
+                    url=await ctx.response.urljoin(url),
                     meta=meta.sub,
                     headers={},
                     cookies={},
@@ -37,8 +47,12 @@ class ListPageDecisionNode(DecisionNode):
                     cls="scrapy.http.request.Request",
                 )
 
+    async def _handle_a(self, selector: Selector) -> str | None:
+        if href := selector.attrib.get("href"):
+            return href
+        return None
+
     class Config(NodeConfig):
         """config."""
 
         paths: str
-        names: str

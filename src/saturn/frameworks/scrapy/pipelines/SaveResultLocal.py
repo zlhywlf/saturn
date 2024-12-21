@@ -20,7 +20,7 @@ class SaveResultLocal:
         Path("./dist").mkdir(exist_ok=True)
         spider.log(f"{item.type!s},{len(item.content or '')}")
         loop = asyncio.get_event_loop()
-        file_name = item.name if item.name else f"{len(item.content or '')}"
+        file_name = item.name.replace("/", "_").replace(":", "_") if item.name else f"{len(item.content or '')}"
         if item.content:
             with open(  # noqa: ASYNC230 PTH123
                 f"./dist/{file_name}-{int(time.time())}.{'html' if 'html' in str(item.type) else 'unknown'}", "wb"
