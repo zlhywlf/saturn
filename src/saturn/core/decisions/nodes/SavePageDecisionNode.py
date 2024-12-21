@@ -17,9 +17,10 @@ class SavePageDecisionNode(DecisionNode):
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
-        ctx.checker.type = 2
+        url = await ctx.response.url
+        selectors = await ctx.response.extract_by_xpath("//head/title/text()")
         yield Result(
             type=(await ctx.response.headers).get("Content-Type", "unknown"),
             content=await ctx.response.body,
-            name=await ctx.response.url,
+            name=selectors[0].get() if selectors else url,
         )

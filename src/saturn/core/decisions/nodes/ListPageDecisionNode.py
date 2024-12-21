@@ -7,10 +7,10 @@ from collections.abc import AsyncGenerator
 from typing import override
 
 from parsel.selector import Selector
+from pydantic import BaseModel
 
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
-from saturn.models.dto.decisions.NodeConfig import NodeConfig
 from saturn.models.dto.decisions.Result import Result
 from saturn.models.dto.decisions.Task import Task
 
@@ -29,7 +29,6 @@ class ListPageDecisionNode(DecisionNode):
     async def _handle_html(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
         config = ListPageDecisionNode.Config.model_validate_json(meta.config)
-        ctx.checker.type = 1 if config.needed else 2
         selectors = await ctx.response.extract_by_xpath(config.next_path)
         for selector in selectors:
             url = None
@@ -46,14 +45,13 @@ class ListPageDecisionNode(DecisionNode):
                     cb_kwargs={},
                     cls="scrapy.http.request.Request",
                 )
-            break
 
     async def _handle_a(self, selector: Selector) -> str | None:
         if href := selector.attrib.get("href"):
             return href
         return None
 
-    class Config(NodeConfig):
+    class Config(BaseModel):
         """config."""
 
         next_path: str
