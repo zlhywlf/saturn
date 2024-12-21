@@ -30,7 +30,7 @@ class ListPageDecisionNode(DecisionNode):
         meta = ctx.checker.meta
         config = ListPageDecisionNode.Config.model_validate_json(meta.config)
         ctx.checker.type = 1 if config.needed else 2
-        selectors = await ctx.response.extract_by_xpath(config.paths)
+        selectors = await ctx.response.extract_by_xpath(config.next_path)
         for selector in selectors:
             url = None
             if selector.root.tag == "a":
@@ -39,13 +39,14 @@ class ListPageDecisionNode(DecisionNode):
                 yield Task(
                     id=0,
                     url=await ctx.response.urljoin(url),
-                    meta=meta.sub,
+                    meta=meta if config.recursion else meta.sub,
                     headers={},
                     cookies={},
                     flags=[],
                     cb_kwargs={},
                     cls="scrapy.http.request.Request",
                 )
+            break
 
     async def _handle_a(self, selector: Selector) -> str | None:
         if href := selector.attrib.get("href"):
@@ -55,4 +56,5 @@ class ListPageDecisionNode(DecisionNode):
     class Config(NodeConfig):
         """config."""
 
-        paths: str
+        next_path: str
+        recursion: bool = False
