@@ -3,6 +3,7 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
+import re
 from collections.abc import AsyncGenerator
 from typing import override
 
@@ -25,6 +26,10 @@ class ListPageDecisionNode(DecisionNode):
         recursion: bool = False
         query: str = ""
         page_path: str = "/"
+
+    def __init__(self) -> None:
+        """Init."""
+        self._pattern = re.compile(r"\b\d+\b")
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
@@ -61,4 +66,7 @@ class ListPageDecisionNode(DecisionNode):
         return await self._handle_a_javascript(config, selector)
 
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
-        return config.query % {"page": selector.xpath(config.page_path).extract_first()}
+        match = self._pattern.search(selector.xpath(config.page_path).extract_first() or "")
+        if not match:
+            return None
+        return config.query % {"page": match.group()}
