@@ -6,6 +6,8 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from abc import ABC, abstractmethod
 from typing import Any
 
+from parsel.selector import Selector, SelectorList
+
 
 class Response(ABC):
     """response."""
@@ -35,5 +37,5 @@ class Response(ABC):
         """Meta."""
 
     @abstractmethod
-    async def extract_by_xpath(self, query: str) -> list[str]:
+    async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
         """Extract by xpath."""

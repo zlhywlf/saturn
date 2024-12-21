@@ -6,6 +6,8 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 from collections.abc import AsyncGenerator
 from typing import override
 
+from parsel.selector import Selector
+
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.NodeConfig import NodeConfig
@@ -18,19 +20,25 @@ class NextPageDecisionNode(DecisionNode):
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
+        headers = await ctx.response.headers
+        content_type = headers.get("Content-Type", "unknown")
+        if b"html" in content_type:
+            async for result in self._handle_html(ctx):
+                yield result
+
+    async def _handle_html(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
         config = NextPageDecisionNode.Config.model_validate_json(meta.config)
         ctx.checker.type = 1 if config.needed else 2
-        next_paths = await ctx.response.extract_by_xpath(config.next_path)
-        if next_paths:
-            for path in next_paths:
-                if ((not path.startswith(("/", "http", "?")) and
-                     not path.endswith(("htm", "html"))) and
-                    all(k not in path for k in [".aspx", ".jspx"])):
-                    continue
+        selectors = await ctx.response.extract_by_xpath(config.next_path)
+        for selector in selectors:
+            url = None
+            if selector.root.tag == "a":
+                url = await self._handle_a(selector)
+            if url:
                 yield Task(
                     id=0,
-                    url=await ctx.response.urljoin(path),
+                    url=await ctx.response.urljoin(url),
                     meta=meta,
                     headers={},
                     cookies={},
@@ -38,6 +46,11 @@ class NextPageDecisionNode(DecisionNode):
                     cb_kwargs={},
                     cls="scrapy.http.request.Request",
                 )
+
+    async def _handle_a(self, selector: Selector) -> str | None:
+        if href := selector.attrib.get("href"):
+            return href
+        return None
 
     class Config(NodeConfig):
         """config."""

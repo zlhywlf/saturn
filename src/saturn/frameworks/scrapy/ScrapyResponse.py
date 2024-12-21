@@ -5,6 +5,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from typing import Any, override
 
+from parsel.selector import Selector, SelectorList
 from scrapy.http.response import Response as OriginResponse
 
 from saturn.core.data.Response import Response
@@ -42,5 +43,5 @@ class ScrapyResponse(Response):
         return self._response.meta
 
     @override
-    async def extract_by_xpath(self, query: str) -> list[str]:
-        return self._response.xpath(query).extract()
+    async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
+        return self._response.xpath(query)
