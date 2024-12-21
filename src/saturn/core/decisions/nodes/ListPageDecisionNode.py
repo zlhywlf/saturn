@@ -18,6 +18,14 @@ from saturn.models.dto.decisions.Task import Task
 class ListPageDecisionNode(DecisionNode):
     """list page decision node."""
 
+    class Config(BaseModel):
+        """config."""
+
+        next_path: str
+        recursion: bool = False
+        query: str = ""
+        page_path: str = "/"
+
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         headers = await ctx.response.headers
@@ -30,15 +38,16 @@ class ListPageDecisionNode(DecisionNode):
         meta = ctx.checker.meta
         config = ListPageDecisionNode.Config.model_validate_json(meta.config)
         selectors = await ctx.response.extract_by_xpath(config.next_path)
+        next_meta = meta if config.recursion else meta.sub
         for selector in selectors:
             url = None
             if selector.root.tag == "a":
-                url = await self._handle_a(selector)
-            if url:
+                url = await self._handle_a(config, selector)
+            if url and next_meta:
                 yield Task(
                     id=0,
                     url=await ctx.response.urljoin(url),
-                    meta=meta if config.recursion else meta.sub,
+                    meta=next_meta,
                     headers={},
                     cookies={},
                     flags=[],
@@ -46,13 +55,10 @@ class ListPageDecisionNode(DecisionNode):
                     cls="scrapy.http.request.Request",
                 )
 
-    async def _handle_a(self, selector: Selector) -> str | None:
+    async def _handle_a(self, config: Config, selector: Selector) -> str | None:
         if href := selector.attrib.get("href"):
-            return href
-        return None
+            return await self._handle_a_javascript(config, selector) if href.startswith("javascript:") else href
+        return await self._handle_a_javascript(config, selector)
 
-    class Config(BaseModel):
-        """config."""
-
-        next_path: str
-        recursion: bool = False
+    async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
+        return config.query % {"page": selector.xpath(config.page_path).extract_first()}

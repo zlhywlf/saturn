@@ -22,5 +22,5 @@ class SavePageDecisionNode(DecisionNode):
         yield Result(
             type=(await ctx.response.headers).get("Content-Type", "unknown"),
             content=await ctx.response.body,
-            name=selectors[0].get() if selectors else url,
+            name=f"[{url}]{selectors[0].get()}" if selectors else url,
         )
