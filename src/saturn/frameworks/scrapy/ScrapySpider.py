@@ -22,7 +22,6 @@ from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyResponse import ScrapyResponse
 from saturn.models.dto.decisions.Context import Context
-from saturn.models.dto.decisions.Meta import Meta
 from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Task import Task
 from saturn.utils.ClassUtil import get_special_modules
@@ -81,8 +80,8 @@ class ScrapySpider(Spider):
 
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
-        meta = Meta.model_validate(response.meta)
-        engine = SimpleDecisionEngine(meta.meta or [], self._node_map)
+        meta = Task.model_validate(response.meta)
+        engine = SimpleDecisionEngine(meta.sub or [], self._node_map)
         ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
         async for result in engine.process(ctx):
             if isinstance(result, Task):

@@ -9,7 +9,6 @@ from typing import override
 from saturn.core.decisions.DecisionEngine import DecisionEngine
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
-from saturn.models.dto.decisions.Meta import Meta
 from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Result import Result
 from saturn.models.dto.decisions.Task import Task
@@ -18,7 +17,7 @@ from saturn.models.dto.decisions.Task import Task
 class SimpleDecisionEngine(DecisionEngine):
     """simple decision engine."""
 
-    def __init__(self, meta: list[Meta], node_map: Mapping[str, DecisionNode]) -> None:
+    def __init__(self, meta: list[Task], node_map: Mapping[str, DecisionNode]) -> None:
         """Init."""
         self._meta = meta
         self._node_map = node_map

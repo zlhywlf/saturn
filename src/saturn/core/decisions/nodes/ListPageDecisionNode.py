@@ -43,9 +43,9 @@ class ListPageDecisionNode(DecisionNode):
 
     async def _handle_html(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
-        config = ListPageDecisionNode.Config.model_validate_json(meta.config)
+        config = ListPageDecisionNode.Config.model_validate_json(meta.config or "")
         selectors = await ctx.response.extract_by_xpath(config.next_path)
-        next_meta = meta if config.recursion else meta.sub
+        next_meta = meta if config.recursion else meta.meta
         for selector in selectors:
             url = None
             if selector.root.tag == "a":
@@ -57,10 +57,6 @@ class ListPageDecisionNode(DecisionNode):
                     id=0,
                     url=await ctx.response.urljoin(url),
                     meta=next_meta,
-                    headers={},
-                    cookies={},
-                    flags=[],
-                    cb_kwargs={},
                     cls="scrapy.http.request.Request",
                 )
 

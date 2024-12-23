@@ -24,12 +24,12 @@ async def test_simple_engine(mocker: MockerFixture, faker: Faker) -> None:
     meta_sub = mocker.Mock(type=sub_type)
     meta_sub.name = name_sub
     meta_root.name = name_root
-    meta_root.meta = [meta_sub]
+    meta_root.sub = [meta_sub]
     context = mocker.Mock(checker=mocker.Mock(meta=meta_root, type=sub_type))
     handle_root = mocker.MagicMock(return_value=_get_return_value([name_root]))
     handle_sub = mocker.MagicMock(return_value=_get_return_value([name_sub]))
     engine = SimpleDecisionEngine(
-        meta_root.meta,
+        meta_root.sub,
         {
             name_root: mocker.Mock(handle=handle_root),
             name_sub: mocker.Mock(handle=handle_sub),
