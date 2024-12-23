@@ -25,11 +25,10 @@ class ListPageDecisionNode(DecisionNode):
         next_path: str
         recursion: bool = False
         query: str = ""
-        page_path: str = "/"
+        patterns: list[str] | None = None
 
     def __init__(self) -> None:
         """Init."""
-        self._pattern = re.compile(r"\b\d+\b")
         self._full_url_pattern = re.compile(r'https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[^"\s]*)?')
         self._relative_url_pattern = re.compile(r'(?:/[^\s"\'<>]+|\.+/[^\s"\'<>]+|\.\./[^\s"\'<>]+)')
 
@@ -70,9 +69,12 @@ class ListPageDecisionNode(DecisionNode):
         return await self._handle_a_javascript(config, selector)
 
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
-        if match := self._pattern.search(selector.xpath(config.page_path).extract_first() or ""):
-            return config.query % {"page": match.group()}
-        return None
+        if not config.patterns:
+            return None
+        s = []
+        for path in config.patterns:
+            s.extend(selector.re(path))
+        return config.query.format(*s)
 
     async def _handle_div(self, config: Config, selector: Selector) -> str | None:
         if match := self._full_url_pattern.search(selector.attrib.get("onclick") or ""):
