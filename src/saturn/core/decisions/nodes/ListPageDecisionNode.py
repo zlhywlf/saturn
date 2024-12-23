@@ -3,7 +3,6 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
-import re
 from collections.abc import AsyncGenerator
 from typing import override
 
@@ -27,11 +26,6 @@ class ListPageDecisionNode(DecisionNode):
         query: str = ""
         patterns: list[str] | None = None
 
-    def __init__(self) -> None:
-        """Init."""
-        self._full_url_pattern = re.compile(r'https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[^"\s]*)?')
-        self._relative_url_pattern = re.compile(r'(?:/[^\s"\'<>]+|\.+/[^\s"\'<>]+|\.\./[^\s"\'<>]+)')
-
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         headers = await ctx.response.headers
@@ -50,7 +44,7 @@ class ListPageDecisionNode(DecisionNode):
             if selector.root.tag == "a":
                 url = await self._handle_a(config, selector)
             if any(selector.root.tag == tag for tag in ["div", "li", "span"]):
-                url = await self._handle_div(config, selector)
+                url = await self._handle_a_javascript(config, selector)
             if url and next_meta:
                 yield Task(
                     id=0,
@@ -75,10 +69,3 @@ class ListPageDecisionNode(DecisionNode):
         for path in config.patterns:
             s.extend(selector.re(path))
         return config.query.format(*s)
-
-    async def _handle_div(self, config: Config, selector: Selector) -> str | None:
-        if match := self._full_url_pattern.search(selector.attrib.get("onclick") or ""):
-            return match.group()
-        if match := self._relative_url_pattern.search(selector.attrib.get("onclick") or ""):
-            return match.group()
-        return await self._handle_a_javascript(config, selector)
