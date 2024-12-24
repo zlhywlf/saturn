@@ -24,7 +24,6 @@ class TaskInfo(BaseTable):
     url: Mapped[str | None] = mapped_column(String(), nullable=True)
     method: Mapped[str] = mapped_column(String(), default="GET")
     type: Mapped[int] = mapped_column(Integer(), default=0)
-    cls: Mapped[str | None] = mapped_column(String(), nullable=True)
     config: Mapped[str | None] = mapped_column(String(), nullable=True)
     cookies: Mapped[str | None] = mapped_column(String(), nullable=True)
     headers: Mapped[str | None] = mapped_column(String(), nullable=True)
@@ -58,7 +57,6 @@ class TaskInfo(BaseTable):
             id=info.id,
             name=info.name,
             url=info.url,
-            cls=info.cls if info.cls else "scrapy.http.request.Request",
             config=info.config,
             type=info.type,
             cookies=cookies_adapter.validate_json(info.cookies) if info.cookies else None,

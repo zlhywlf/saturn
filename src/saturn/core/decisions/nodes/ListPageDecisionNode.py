@@ -52,7 +52,6 @@ class ListPageDecisionNode(DecisionNode):
                     id=0,
                     url=await ctx.response.urljoin(url),
                     meta=next_meta,
-                    cls="scrapy.http.request.Request",
                 )
 
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:

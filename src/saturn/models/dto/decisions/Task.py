@@ -5,7 +5,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class Task(BaseModel):
@@ -14,7 +14,6 @@ class Task(BaseModel):
     id: int
     name: str = "unknown"
     url: str | None = None
-    cls: str = Field("scrapy.http.request.Request", serialization_alias="_class")
     config: str | None = None
     type: int = 0
     cookies: dict[str, str] | None = None
