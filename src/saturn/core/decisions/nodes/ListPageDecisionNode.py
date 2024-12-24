@@ -37,11 +37,22 @@ class ListPageDecisionNode(DecisionNode):
         next_meta = meta if config.recursion else meta.meta
         for selector in selectors:
             url = await self._handle_a_javascript(config, selector)
-            if url and next_meta:
+            if url is not None and next_meta:
+                full_url = (
+                    meta.url
+                    if meta.url
+                    else (
+                        (await ctx.response.url) if meta.method.lower() == "post" else (await ctx.response.urljoin(url))
+                    )
+                )
+                body = url.encode() if meta.method.lower() == "post" else b""
                 yield Task(
                     id=0,
-                    url=await ctx.response.urljoin(url),
+                    url=full_url,
                     meta=next_meta,
+                    method=meta.method,
+                    headers=meta.headers,
+                    body=body,
                 )
 
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
@@ -49,5 +60,7 @@ class ListPageDecisionNode(DecisionNode):
             return None
         s = []
         for path in config.patterns:
-            s.extend([w3lib_replace_entities(s) for s in selector.re(path, replace_entities=False)])
+            s.extend([w3lib_replace_entities(s) for s in selector.re(path, replace_entities=False) if s])
+        if config.query and not s:
+            return None
         return config.query.format(*s)

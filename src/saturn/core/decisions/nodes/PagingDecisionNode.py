@@ -7,7 +7,7 @@ import math
 from collections.abc import AsyncGenerator
 from typing import override
 
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel
 
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
@@ -26,10 +26,6 @@ class PagingDecisionNode(DecisionNode):
         query: str = ""
         headers: str | None = None
 
-    def __init__(self) -> None:
-        """Init."""
-        self._headers_adapter = TypeAdapter(dict[bytes, list[bytes]])
-
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
@@ -41,13 +37,11 @@ class PagingDecisionNode(DecisionNode):
         if total is None or size is None:
             return
         pages = math.ceil(int(total) / int(size))
-        headers = None
-        if config.headers:
-            headers = self._headers_adapter.validate_json(config.headers)
         for page in range(pages):
             if page > 1:
                 break
             query = config.query.format(page + 1, size)
+            body = query.encode() if meta.method.lower() == "post" else b""
             yield Task(
-                id=0, url=await ctx.response.url, method="POST", meta=meta.meta, body=query.encode(), headers=headers
+                id=0, url=await ctx.response.url, method=meta.method, meta=meta.meta, body=body, headers=meta.headers
             )

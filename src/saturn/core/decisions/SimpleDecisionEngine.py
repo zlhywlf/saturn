@@ -9,7 +9,6 @@ from typing import override
 from saturn.core.decisions.DecisionEngine import DecisionEngine
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
-from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Result import Result
 from saturn.models.dto.decisions.Task import Task
 
@@ -31,13 +30,8 @@ class SimpleDecisionEngine(DecisionEngine):
             node = self._node_map[curr_meta.name]
             async for result in node.handle(ctx):
                 yield result
-            self._decide(ctx.checker)
-            next_meta = ctx.checker.meta
-            if next_meta is curr_meta:
+            if not self._meta:
                 break
-
-    def _decide(self, checker: MetaChecker) -> None:
-        for meta in self._meta:
-            if meta.type == checker.type:
-                checker.meta = meta
-                return
+            next_meta = ctx.checker.meta = self._meta.pop()
+            if not next_meta:
+                break

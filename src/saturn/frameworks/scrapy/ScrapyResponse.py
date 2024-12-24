@@ -52,3 +52,8 @@ class ScrapyResponse(Response):
     @override
     async def extract(self, query: str) -> SelectorList[Selector]:
         return self._response.jmespath(query) if self._is_json else self._response.xpath(query)
+
+    @property
+    @override
+    def is_json(self) -> bool:
+        return self._is_json

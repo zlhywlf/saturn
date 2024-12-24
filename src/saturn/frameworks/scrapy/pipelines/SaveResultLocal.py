@@ -25,10 +25,10 @@ class SaveResultLocal:
             if item.name
             else f"{len(item.content or '')}"
         )
-        file_name = file_name[:80]
+        file_name = file_name[:120]
         if item.content:
             with open(  # noqa: ASYNC230 PTH123
-                f"./dist/{file_name}-{int(time.time())}.{'html' if 'html' in str(item.type) else 'unknown'}", "wb"
+                f"./dist/{file_name}-{int(time.time())}.{'html' if 'html' in str(item.type) else 'json'}", "wb"
             ) as f:
                 await loop.run_in_executor(None, f.write, item.content)
         return item

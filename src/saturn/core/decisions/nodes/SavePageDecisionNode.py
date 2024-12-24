@@ -18,7 +18,7 @@ class SavePageDecisionNode(DecisionNode):
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         url = await ctx.response.url
-        selectors = await ctx.response.extract("//head/title/text()")
+        selectors = await ctx.response.extract("//head/title/text()") if not ctx.response.is_json else None
         yield Result(
             type=(await ctx.response.headers).get("Content-Type", "unknown"),
             content=await ctx.response.body,

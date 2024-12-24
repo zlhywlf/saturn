@@ -44,3 +44,8 @@ class Response(ABC):
     @abstractmethod
     async def url(self) -> str:
         """Url."""
+
+    @property
+    @abstractmethod
+    def is_json(self) -> bool:
+        """Is json."""
