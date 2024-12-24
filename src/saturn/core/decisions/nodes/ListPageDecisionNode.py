@@ -8,6 +8,7 @@ from typing import override
 
 from parsel.selector import Selector
 from pydantic import BaseModel
+from w3lib.html import replace_entities as w3lib_replace_entities
 
 from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
@@ -45,11 +46,7 @@ class ListPageDecisionNode(DecisionNode):
         selectors = await ctx.response.extract_by_xpath(config.next_path)
         next_meta = meta if config.recursion else meta.meta
         for selector in selectors:
-            url = None
-            if selector.root.tag == "a":
-                url = await self._handle_a(config, selector)
-            if any(selector.root.tag == tag for tag in ["div", "li", "span"]):
-                url = await self._handle_a_javascript(config, selector)
+            url = await self._handle_a_javascript(config, selector)
             if url and next_meta:
                 yield Task(
                     id=0,
@@ -58,21 +55,12 @@ class ListPageDecisionNode(DecisionNode):
                     cls="scrapy.http.request.Request",
                 )
 
-    async def _handle_a(self, config: Config, selector: Selector) -> str | None:
-        if href := selector.attrib.get("href"):
-            return (
-                await self._handle_a_javascript(config, selector)
-                if href.startswith(("javaScript:", "javascript:", "#"))
-                else href
-            )
-        return await self._handle_a_javascript(config, selector)
-
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
         if not config.patterns:
             return None
         s = []
         for path in config.patterns:
-            s.extend(selector.re(path))
+            s.extend([w3lib_replace_entities(s) for s in selector.re(path, replace_entities=False)])
         return config.query.format(*s)
 
     async def _handle_json(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
