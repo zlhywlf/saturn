@@ -33,10 +33,15 @@ class ListPageDecisionNode(DecisionNode):
         if b"html" in content_type:
             async for result in self._handle_html(ctx):
                 yield result
+        if b"application/json" in content_type:
+            async for result in self._handle_json(ctx):
+                yield result
 
     async def _handle_html(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
-        config = ListPageDecisionNode.Config.model_validate_json(meta.config or "")
+        if not meta.config:
+            return
+        config = ListPageDecisionNode.Config.model_validate_json(meta.config)
         selectors = await ctx.response.extract_by_xpath(config.next_path)
         next_meta = meta if config.recursion else meta.meta
         for selector in selectors:
@@ -69,3 +74,24 @@ class ListPageDecisionNode(DecisionNode):
         for path in config.patterns:
             s.extend(selector.re(path))
         return config.query.format(*s)
+
+    async def _handle_json(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
+        meta = ctx.checker.meta
+        if not meta.config:
+            return
+        config = ListPageDecisionNode.Config.model_validate_json(meta.config)
+        selectors = await ctx.response.extract_by_jmespath(config.next_path)
+        next_meta = meta if config.recursion else meta.meta
+        for selector in selectors:
+            if config.patterns:
+                s = []
+                for path in config.patterns:
+                    s.extend(selector.re(path))
+                url = config.query.format(*s)
+            else:
+                url = selector.get()
+            yield Task(
+                id=0,
+                url=await ctx.response.urljoin(url),
+                meta=next_meta,
+            )

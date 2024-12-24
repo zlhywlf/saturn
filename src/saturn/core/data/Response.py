@@ -44,3 +44,7 @@ class Response(ABC):
     @abstractmethod
     async def url(self) -> str:
         """Url."""
+
+    @abstractmethod
+    async def extract_by_jmespath(self, query: str) -> SelectorList[Selector]:
+        """Extract by jmespath."""

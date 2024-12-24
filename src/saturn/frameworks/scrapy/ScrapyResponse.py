@@ -50,3 +50,7 @@ class ScrapyResponse(Response):
     @override
     async def url(self) -> str:
         return self._response.url
+
+    @override
+    async def extract_by_jmespath(self, query: str) -> SelectorList[Selector]:
+        return self._response.jmespath(query)
