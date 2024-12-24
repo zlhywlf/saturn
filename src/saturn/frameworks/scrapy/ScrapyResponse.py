@@ -16,7 +16,9 @@ class ScrapyResponse(Response):
 
     def __init__(self, origin: OriginResponse) -> None:
         """Init."""
+        content_type = origin.headers.get("Content-Type")
         self._response = origin
+        self._is_json = bool(content_type and b"application/json" in content_type)
 
     @override
     async def urljoin(self, url: str) -> str:
@@ -42,15 +44,11 @@ class ScrapyResponse(Response):
     async def meta(self) -> dict[str, Any]:
         return self._response.meta
 
-    @override
-    async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
-        return self._response.xpath(query)
-
     @property
     @override
     async def url(self) -> str:
         return self._response.url
 
     @override
-    async def extract_by_jmespath(self, query: str) -> SelectorList[Selector]:
-        return self._response.jmespath(query)
+    async def extract(self, query: str) -> SelectorList[Selector]:
+        return self._response.jmespath(query) if self._is_json else self._response.xpath(query)

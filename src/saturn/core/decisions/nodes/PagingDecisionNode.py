@@ -32,19 +32,12 @@ class PagingDecisionNode(DecisionNode):
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
-        headers = await ctx.response.headers
-        content_type = headers.get("Content-Type", "unknown")
-        if b"application/json" in content_type:
-            async for result in self._handle_json(ctx):
-                yield result
-
-    async def _handle_json(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
         meta = ctx.checker.meta
         if not meta.config:
             return
         config = PagingDecisionNode.Config.model_validate_json(meta.config)
-        total = (await ctx.response.extract_by_jmespath(config.total)).get()
-        size = (await ctx.response.extract_by_jmespath(config.size)).get()
+        total = (await ctx.response.extract(config.total)).get()
+        size = (await ctx.response.extract(config.size)).get()
         if total is None or size is None:
             return
         pages = math.ceil(int(total) / int(size))

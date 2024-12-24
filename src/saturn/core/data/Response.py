@@ -37,14 +37,10 @@ class Response(ABC):
         """Meta."""
 
     @abstractmethod
-    async def extract_by_xpath(self, query: str) -> SelectorList[Selector]:
-        """Extract by xpath."""
+    async def extract(self, query: str) -> SelectorList[Selector]:
+        """Extract."""
 
     @property
     @abstractmethod
     async def url(self) -> str:
         """Url."""
-
-    @abstractmethod
-    async def extract_by_jmespath(self, query: str) -> SelectorList[Selector]:
-        """Extract by jmespath."""
