@@ -51,5 +51,5 @@ class Response(ABC):
         """Is json."""
 
     @abstractmethod
-    async def replace(self, **kwargs: Any) -> None:
+    async def replace(self, body: bytes) -> None:
         """Replace."""

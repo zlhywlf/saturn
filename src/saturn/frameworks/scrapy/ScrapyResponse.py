@@ -59,5 +59,5 @@ class ScrapyResponse(Response):
         return self._is_json
 
     @override
-    async def replace(self, **kwargs: Any) -> None:
-        self._response = self._response.replace(**kwargs)
+    async def replace(self, body: bytes) -> None:
+        self._response = self._response.replace(body=body)

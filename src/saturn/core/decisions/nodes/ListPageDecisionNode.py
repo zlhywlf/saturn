@@ -47,7 +47,7 @@ class ListPageDecisionNode(DecisionNode):
         if config.convert_json:
             old_body = self._adapter.validate_json(await ctx.response.body)
             new_body = self.convert_json_strings_to_dict(old_body)
-            await ctx.response.replace(body=self._adapter.dump_json(new_body))
+            await ctx.response.replace(self._adapter.dump_json(new_body))
         selectors = await ctx.response.extract(config.next_path)
         next_meta = meta if config.recursion else meta.meta
         for selector in selectors:
