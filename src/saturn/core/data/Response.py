@@ -49,3 +49,7 @@ class Response(ABC):
     @abstractmethod
     def is_json(self) -> bool:
         """Is json."""
+
+    @abstractmethod
+    async def replace(self, **kwargs: Any) -> None:
+        """Replace."""

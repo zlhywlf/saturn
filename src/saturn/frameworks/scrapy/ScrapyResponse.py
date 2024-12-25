@@ -7,6 +7,7 @@ from typing import Any, override
 
 from parsel.selector import Selector, SelectorList
 from scrapy.http.response import Response as OriginResponse
+from scrapy.http.response.text import TextResponse
 
 from saturn.core.data.Response import Response
 
@@ -16,9 +17,8 @@ class ScrapyResponse(Response):
 
     def __init__(self, origin: OriginResponse) -> None:
         """Init."""
-        content_type = origin.headers.get("Content-Type")
         self._response = origin
-        self._is_json = bool(content_type and b"application/json" in content_type)
+        self._is_json = bool(isinstance(origin, TextResponse) and origin.selector.type == "json")
 
     @override
     async def urljoin(self, url: str) -> str:
@@ -57,3 +57,7 @@ class ScrapyResponse(Response):
     @override
     def is_json(self) -> bool:
         return self._is_json
+
+    @override
+    async def replace(self, **kwargs: Any) -> None:
+        self._response = self._response.replace(**kwargs)
