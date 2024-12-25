@@ -26,8 +26,8 @@ class SaveResultLocal:
             .replace("?", "_")
             .replace("\n", "")
             .replace(" ", "")
-            .replace("\r","")
-            .replace("\t","")
+            .replace("\r", "")
+            .replace("\t", "")
             if item.name
             else f"{len(item.content or '')}"
         )
