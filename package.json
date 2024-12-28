@@ -24,9 +24,12 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@mdi/font": "7.4.47",
+    "axios": "^1.7.9",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
+    "vee-validate": "^4.15.0",
     "vue": "^3.4.31",
     "vuetify": "^3.6.14"
   },
