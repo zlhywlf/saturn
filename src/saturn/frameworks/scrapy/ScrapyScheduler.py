@@ -19,7 +19,7 @@ from saturn.models.dto.decisions.Task import Task
 
 
 class ScrapyScheduler(BaseScheduler):
-    """scrapy scheduler."""
+    """scrapy api."""
 
     def __init__(
         self,
@@ -88,7 +88,7 @@ class ScrapyScheduler(BaseScheduler):
             self.dupe_filter.log(request, self._spider)
             return False
         if self._stats:
-            self._stats.inc_value("scheduler/enqueued/redis", spider=self._spider)
+            self._stats.inc_value("api/enqueued/redis", spider=self._spider)
         self.queue.push(Task.model_validate(request.to_dict()))
         return True
 
@@ -96,7 +96,7 @@ class ScrapyScheduler(BaseScheduler):
     def next_request(self) -> Request | None:
         task = self.queue.pop()
         if task and self._stats:
-            self._stats.inc_value("scheduler/dequeued/redis", spider=self._spider)
+            self._stats.inc_value("api/dequeued/redis", spider=self._spider)
         return request_from_dict(task.model_dump()) if task else None
 
     @override

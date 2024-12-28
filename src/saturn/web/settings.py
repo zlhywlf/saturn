@@ -14,7 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "saturn.web.scheduler.apps.SchedulerConfig",
+    "saturn.web.api.apps.ApiConfig",
 ]
 
 REST_FRAMEWORK = {"DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",)}
@@ -39,7 +39,7 @@ ROOT_URLCONF = "saturn.web.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "web" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -84,6 +84,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/assets/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "web" / "templates" / "assets",
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

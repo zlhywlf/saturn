@@ -18,3 +18,4 @@ auto-imports.d.ts
 components.d.ts
 typed-router.d.ts
 *.http
+src/saturn/web/templates

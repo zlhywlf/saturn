@@ -59,6 +59,7 @@ saturn = "saturn.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/saturn"]
+artifacts = ["src/saturn/web/templates"]
 
 [tool.hatch.version]
 source = "vcs"
@@ -73,11 +74,14 @@ version = {version!r}
 version_tuple = {version_tuple!r}
 """
 
+[tool.hatch.build.hooks.custom]
+path = "scripts/build.py"
+
 [tool.ruff]
 line-length = 120
 fix = true
 preview = true
-exclude = ["src/saturn/_version.py"]
+exclude = ["src/saturn/_version.py", "scripts/*"]
 
 [tool.ruff.format]
 docstring-code-format = true
