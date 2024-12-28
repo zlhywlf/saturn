@@ -12,3 +12,4 @@ htmlcov
 src/saturn/_version.py
 .env
 *.log*
+db.sqlite3

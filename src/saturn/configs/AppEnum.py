@@ -11,3 +11,4 @@ class AppEnum(StrEnum):
 
     DOC = "doc"
     SCRAPY = "scrapy"
+    WEB = "web"

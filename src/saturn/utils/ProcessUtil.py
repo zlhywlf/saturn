@@ -25,6 +25,7 @@ class ProcessUtil:
     APPS: ClassVar[dict[AppEnum, str]] = {
         AppEnum.DOC: "mkdocs serve -a 0.0.0.0:58000",
         AppEnum.SCRAPY: "python -m saturn.frameworks.scrapy",
+        AppEnum.WEB: "django-admin runserver --settings saturn.web.settings --noreload",
     }
 
     def __init__(self, app: AppEnum, config: ProjectConfig) -> None:
