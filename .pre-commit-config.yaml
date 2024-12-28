@@ -6,8 +6,8 @@ repos:
         entry: ruff format --force-exclude
         language: python
         language_version: python3.12
-        additional_dependencies: [ ruff~=0.8.0 ]
-        types_or: [ python , pyi ]
+        additional_dependencies: [ruff~=0.8.0]
+        types_or: [python, pyi]
         require_serial: true
         verbose: true
       - id: ruff-check
@@ -15,7 +15,7 @@ repos:
         entry: ruff check --force-exclude
         language: python
         language_version: python3.12
-        additional_dependencies: [ ruff~=0.8.0 ]
-        types_or: [ python , pyi ]
+        additional_dependencies: [ruff~=0.8.0]
+        types_or: [python, pyi]
         require_serial: true
         verbose: true

@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 import os
 
 from django.core.wsgi import get_wsgi_application

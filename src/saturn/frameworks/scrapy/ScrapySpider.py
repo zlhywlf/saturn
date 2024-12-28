@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 import time
 from collections.abc import AsyncGenerator, Iterable
 from typing import Any, Self, override

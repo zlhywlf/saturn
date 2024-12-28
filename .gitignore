@@ -13,3 +13,7 @@ src/saturn/_version.py
 .env
 *.log*
 db.sqlite3
+node_modules
+auto-imports.d.ts
+components.d.ts
+typed-router.d.ts
