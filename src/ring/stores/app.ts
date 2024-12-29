@@ -3,12 +3,14 @@ import { defineStore } from "pinia"
 interface State {
   drawerSidebar: boolean
   miniSidebar: boolean
+  loading: boolean
 }
 
 export const useAppStore = defineStore("app", {
   state: (): State => ({
     drawerSidebar: true,
-    miniSidebar: false
+    miniSidebar: false,
+    loading: false
   }),
   actions: {
     setMiniSidebar() {

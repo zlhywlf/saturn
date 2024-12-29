@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { useAuthStore } from "@/stores/auth"
+import { useAppStore } from "@/stores/app"
 
-const authStore = useAuthStore()
-const { isLoading } = storeToRefs(authStore)
+const appStore = useAppStore()
+const { loading } = storeToRefs(appStore)
 </script>
 
 <template>
   <div
     :class="{
       'page-loader': true,
-      loading: isLoading,
-      hidden: !isLoading
+      loading: loading,
+      hidden: !loading
     }"
   >
     <div class="bar" />
