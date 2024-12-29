@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
       }),
       Components({
         dts: "src/ring/components.d.ts",
-        dirs: ['src/ring/components'],
+        dirs: ["src/ring/components"]
       }),
       Vue({
         template: { transformAssetUrls }
