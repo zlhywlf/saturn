@@ -11,9 +11,8 @@
 }
 /*This is for the Vertical sidebar*/
 .scrollnavbar {
-    height: calc(100vh - 110px);
     .smallCap {
-        padding: 0px 0 0 20px !important;
+        padding: 0 0 0 20px !important;
     }
     .v-list {
         color: rgb(var(--v-theme-lightText));

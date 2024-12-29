@@ -51,7 +51,7 @@ const appStore = useAppStore()
     expand-on-hover
   >
     <div class="pa-5">
-      <v-img class="mb-4" height="150" src="@/assets/logo.svg" />
+      <v-img class="mb-4" height="90" src="@/assets/logo.svg" />
     </div>
     <perfect-scrollbar class="scrollnavbar">
       <v-list aria-busy="true" aria-label="menu list">
@@ -62,9 +62,6 @@ const appStore = useAppStore()
           <NavItem :item="item" v-else />
         </template>
       </v-list>
-      <div class="pa-4">
-        <ExtraBox />
-      </div>
     </perfect-scrollbar>
   </v-navigation-drawer>
 </template>
