@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
         template: { transformAssetUrls }
       }),
       Vuetify({
-        autoImport: true,
+        autoImport: true
       }),
       Fonts({
         google: {

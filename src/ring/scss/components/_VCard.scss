@@ -1,43 +1,43 @@
-@use '../variables' as vars;
+@use "../variables" as vars;
 
 // Outline Card
 .v-card--variant-outlined {
-  border-color: rgba(var(--v-theme-borderLight), 1);
-  .v-divider {
-    border-color: rgba(var(--v-theme-borderLight), 0.8);
-  }
+    border-color: rgba(var(--v-theme-borderLight), 1);
+    .v-divider {
+        border-color: rgba(var(--v-theme-borderLight), 0.8);
+    }
 }
 
 .v-card-text {
-  padding: vars.$card-text-spacer;
+    padding: vars.$card-text-spacer;
 }
 
 .v-card-actions {
-  padding: 14px vars.$card-text-spacer 14px;
+    padding: 14px vars.$card-text-spacer 14px;
 }
 
 .v-card {
-  width: 100%;
-  overflow: visible;
-  .v-card-title {
-    &.text-h6 {
-      font-weight: 600;
-      line-height: 1.57;
+    width: 100%;
+    overflow: visible;
+    .v-card-title {
+        &.text-h6 {
+            font-weight: 600;
+            line-height: 1.57;
+        }
     }
-  }
 }
 
 .v-card-item {
-  padding: vars.$card-item-spacer-xy;
+    padding: vars.$card-item-spacer-xy;
 }
 
 .v-card-subtitle {
-  font-size: 0.75rem;
+    font-size: 0.75rem;
 }
 
 .title-card {
-  .v-card-text {
-    background-color: rgb(var(--v-theme-background));
-    border: 1px solid rgba(var(--v-theme-borderLight), 1);
-  }
+    .v-card-text {
+        background-color: rgb(var(--v-theme-background));
+        border: 1px solid rgba(var(--v-theme-borderLight), 1);
+    }
 }

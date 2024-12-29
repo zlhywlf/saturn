@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import avatarGroup from '@/assets/logo.svg';
+import avatarGroup from "@/assets/logo.svg"
 </script>
 
 <template>
