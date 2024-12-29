@@ -131,3 +131,8 @@ const doLogin = handleSubmit((values, { setErrors }) => {
   }
 }
 </style>
+
+<route lang="yaml">
+meta:
+  layout: blank
+</route>

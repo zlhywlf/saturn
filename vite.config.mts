@@ -41,9 +41,6 @@ export default defineConfig(({ mode }) => {
       }),
       Vuetify({
         autoImport: true,
-        styles: {
-          configFile: "src/ring/styles/settings.scss"
-        }
       }),
       Fonts({
         google: {

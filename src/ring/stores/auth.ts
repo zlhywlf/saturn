@@ -33,6 +33,11 @@ export const useAuthStore = defineStore("auth", {
       } finally {
         this.isLoading = false
       }
+    },
+    async logout() {
+      this.user = null
+      localStorage.removeItem("token")
+      await router.push("/login")
     }
   }
 })

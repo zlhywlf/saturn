@@ -9,7 +9,6 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 class FrontendBuildHook(BuildHookInterface):
     @override
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
-        print(build_data)
         try:
             subprocess.run(["pnpm", "build"], check=True, shell=True)
         except subprocess.CalledProcessError as e:

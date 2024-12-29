@@ -1,0 +1,22 @@
+@use '../variables' as vars;
+
+.elevation-24 {
+  box-shadow: vars.$box-shadow !important;
+}
+
+.v-menu {
+  > .v-overlay__content {
+    > .v-sheet {
+      box-shadow: vars.$box-shadow;
+    }
+  }
+}
+
+@each $color, $value in vars.$theme-colors {
+  .#{$color}-shadow {
+    box-shadow: 0 14px 12px rgba(#{$value}, 0.2);
+    &:hover {
+      box-shadow: none;
+    }
+  }
+}
