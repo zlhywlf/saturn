@@ -13,9 +13,12 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       VueRouter({
-        dts: "src/typed-router.d.ts"
+        dts: "src/ring/typed-router.d.ts",
+        routesFolder: "src/ring/pages"
       }),
-      Layouts(),
+      Layouts({
+        layoutsDirs: "src/ring/layouts"
+      }),
       AutoImport({
         imports: [
           "vue",
@@ -23,14 +26,15 @@ export default defineConfig(({ mode }) => {
             "vue-router/auto": ["useRoute", "useRouter"]
           }
         ],
-        dts: "src/auto-imports.d.ts",
+        dts: "src/ring/auto-imports.d.ts",
         eslintrc: {
           enabled: true
         },
         vueTemplate: true
       }),
       Components({
-        dts: "src/components.d.ts"
+        dts: "src/ring/components.d.ts",
+        dirs: ['src/ring/components'],
       }),
       Vue({
         template: { transformAssetUrls }
@@ -38,7 +42,7 @@ export default defineConfig(({ mode }) => {
       Vuetify({
         autoImport: true,
         styles: {
-          configFile: "src/styles/settings.scss"
+          configFile: "src/ring/styles/settings.scss"
         }
       }),
       Fonts({
@@ -55,7 +59,7 @@ export default defineConfig(({ mode }) => {
     define: { "process.env": {} },
     resolve: {
       alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url))
+        "@": fileURLToPath(new URL("./src/ring", import.meta.url))
       },
       extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"]
     },
@@ -66,6 +70,9 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_API_URL,
           changeOrigin: true
         }
+      },
+      watch: {
+        ignored: ["!src/ring/**"]
       }
     },
     css: {
