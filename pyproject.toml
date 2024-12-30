@@ -81,7 +81,7 @@ path = "scripts/build.py"
 line-length = 120
 fix = true
 preview = true
-exclude = ["src/saturn/_version.py", "scripts/*"]
+exclude = ["src/saturn/_version.py", "scripts/*", "**/migrations/*"]
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -122,8 +122,12 @@ python_version = "3.12"
 files = ["src/saturn", "tests"]
 
 [[tool.mypy.overrides]]
-module = []
-ignore_missing_imports = true
+module = "saturn.web.api.models"
+disable_error_code = ["var-annotated"]
+
+[[tool.mypy.overrides]]
+module = ["saturn.web.api.serializers", "saturn.web.api.views"]
+disable_error_code = ["type-arg"]
 
 [tool.coverage.report]
 exclude_also = [

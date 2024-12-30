@@ -1,11 +1,11 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
-from rest_framework.response import Response
+from rest_framework import viewsets
+
+from saturn.web.api.models import Client
+from saturn.web.api.serializers import ClientSerializer
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def index(request: Request) -> Response:
-    """Index."""
-    return Response({"headers": dict(request.headers.items()), "user": request.user.is_authenticated})
+class ClientViewSet(viewsets.ModelViewSet):
+    """client."""
+
+    queryset = Client.objects.order_by("-id")
+    serializer_class = ClientSerializer
