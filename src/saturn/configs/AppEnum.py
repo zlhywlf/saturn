@@ -10,4 +10,4 @@ class AppEnum(StrEnum):
     """app."""
 
     DOC = "doc"
-    SCRAPY = "scrapy"
+    ADMIN = "admin"

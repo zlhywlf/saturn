@@ -12,3 +12,5 @@ htmlcov
 src/saturn/_version.py
 .env
 *.log*
+cache
+database
