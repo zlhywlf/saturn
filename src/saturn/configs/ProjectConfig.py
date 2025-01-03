@@ -19,28 +19,35 @@ class ProjectConfig(BaseSettings, env_prefix="SATURN_PROJECT_", env_file=".env",
     cache_url: str | None = None
     db_url: str = Field(default="sqlite+aiosqlite://")
     task_module: str = Field(default="saturn.tasks")
+    dupe_filter_key: str = Field(default="dupe_filter:%(timestamp)s")
+    queue_key: str = Field(default="saturn:requests")
+    rfp_persistent_cls: str = Field(default="saturn.core.rfp.RedisRfpPersistentSync.RedisRfpPersistentSync")
+    queue_persistent_cls: str = Field(default="saturn.core.queues.RedisQueuePersistentSync.RedisQueuePersistentSync")
 
-    @computed_field
-    def project_banner(self) -> str:
-        """Project banner."""
-        return f"{self.banner}\n:: the powerful crawler application :: v{version}\n"
 
-    @field_validator("banner")
-    @classmethod
-    def inject_banner(cls, v: str, info: ValidationInfo) -> str:
-        """Inject banner."""
-        if v:
-            return v
-        banner_path = info.data["banner_path"]
-        if not banner_path.exists():
-            return cls.default_banner()
-        with banner_path.open("r") as f:
-            return "".join(f.readlines())
+@computed_field
+def project_banner(self) -> str:
+    """Project banner."""
+    return f"{self.banner}\n:: the powerful crawler application :: v{version}\n"
 
-    @classmethod
-    def default_banner(cls) -> str:
-        """Default banner."""
-        return r"""
+
+@field_validator("banner")
+@classmethod
+def inject_banner(cls, v: str, info: ValidationInfo) -> str:
+    """Inject banner."""
+    if v:
+        return v
+    banner_path = info.data["banner_path"]
+    if not banner_path.exists():
+        return cls.default_banner()
+    with banner_path.open("r") as f:
+        return "".join(f.readlines())
+
+
+@classmethod
+def default_banner(cls) -> str:
+    """Default banner."""
+    return r"""
  ::::::::      ::: ::::::::::: :::    ::: :::::::::  ::::    :::
 :+:    :+:   :+: :+:   :+:     :+:    :+: :+:    :+: :+:+:   :+:
 +:+         +:+   +:+  +:+     +:+    +:+ +:+    +:+ :+:+:+  +:+
