@@ -1,30 +1,13 @@
-from saturn import ListPageDecisionNode, SavePageDecisionNode, Task
+from saturn import entry_task, list_task, save_item
 
-enter = Task(
+quote = entry_task(
     name="quote",
     url="https://quotes.toscrape.com/",
     dont_filter=True,
 )
 
-paging = Task(
-    name=ListPageDecisionNode.__name__,
-    config=ListPageDecisionNode.Config(
-        next_path="//ul//a",
-        recursion=True,
-        query="{0}",
-        patterns=[r'href="([^"]+)"'],
-    ).model_dump_json(),
-)
+paging = list_task(next_path="//ul//a", query="{0}", patterns=[r'href="([^"]+)"'], recursion=True)
 
-item = Task(
-    name=ListPageDecisionNode.__name__,
-    config=ListPageDecisionNode.Config(
-        next_path="//div[@class='quote']//a",
-        query="{0}",
-        patterns=[r'href="([^"]+)"'],
-    ).model_dump_json(),
-)
+item = list_task(next_path="//div[@class='quote']//a", query="{0}", patterns=[r'href="([^"]+)"'])
 
-save = Task(name=SavePageDecisionNode.__name__)
-
-enter >> paging >> [item >> save]
+quote >> paging >> [item >> save_item]

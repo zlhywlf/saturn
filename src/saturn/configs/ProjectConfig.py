@@ -16,8 +16,9 @@ class ProjectConfig(BaseSettings, env_prefix="SATURN_PROJECT_", env_file=".env",
     banner: str = Field(default="", description="banner")
     debug: bool = Field(default=False, description="debug mode")
     log_path: pathlib.Path = Field(default=pathlib.Path.cwd() / "logging.ini", description="log config path")
-    cache_url: str = Field(default="redis://127.0.0.1:6379/8")
+    cache_url: str | None = None
     db_url: str = Field(default="sqlite+aiosqlite://")
+    task_module: str = Field(default="saturn.tasks")
 
     @computed_field
     def project_banner(self) -> str:

@@ -1,4 +1,6 @@
-from saturn.configs import project_config
-from fakeredis import FakeRedis as Redis
+from fakeredis import FakeRedis
+from redis import Redis
 
-redis_sync = Redis.from_url(project_config.cache_url)
+from saturn.configs import project_config
+
+redis_sync = Redis.from_url(project_config.cache_url) if project_config.cache_url else FakeRedis()
