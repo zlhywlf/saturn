@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel
 
@@ -25,13 +25,16 @@ class Task(BaseModel):
     callback: str | None = None
     errback: str | None = None
 
-    def __rshift__(self, n: "Task" | list["Task"]) -> "Task":
+    def __rshift__(self, n: Union["Task", list["Task"]]) -> "Task":
         """>>."""
+        t = self
+        while t.meta:
+            t = t.meta
         if isinstance(n, list):
-            self.sub = [self._check(_) for _ in n]
-            return self
-        self.meta = self._check(n)
-        return n
+            t.sub = [self._check(_) for _ in n]
+        else:
+            t.meta = self._check(n)
+        return self
 
     def _check(self, n: "Task") -> "Task":
         if n is self:

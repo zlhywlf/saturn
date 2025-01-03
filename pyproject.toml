@@ -24,7 +24,6 @@ dependencies = [
   "redis~=5.2.0",
   "scrapy~=2.12.0",
   "scrapyd~=1.5.0",
-  "scrapydweb~=1.5.0",
 ]
 
 [project.optional-dependencies]
@@ -45,6 +44,9 @@ dev = [
   "pytest-xdist~=3.6.0",
   "ruff~=0.8.0",
   "types-psutil==6.1.0.20241102",
+]
+admin = [
+  "scrapydweb~=1.5.0",
 ]
 
 [project.urls]

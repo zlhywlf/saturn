@@ -8,3 +8,5 @@ ROBOTSTXT_OBEY = False
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {"saturn.frameworks.scrapy.pipelines.SaveResultLocal.SaveResultLocal": 1}
+DUPEFILTER_CLASS = "saturn.frameworks.scrapy.ScrapyRfpDupeFilter.ScrapyRfpDupeFilter"
+SCHEDULER = "saturn.frameworks.scrapy.ScrapyScheduler.ScrapyScheduler"

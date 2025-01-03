@@ -1,6 +1,6 @@
 import time
 from collections.abc import AsyncGenerator, Iterable
-from typing import Any, Self, override
+from typing import Any, ClassVar, Self, override
 
 from scrapy import Request, signals
 from scrapy.crawler import Crawler
@@ -10,22 +10,20 @@ from scrapy.spiders import Spider
 from scrapy.utils.misc import load_object
 from scrapy.utils.request import request_from_dict
 
-import saturn.core.decisions.nodes as nodes
 from saturn.configs import scrapy_config
-from saturn.core.decisions.DecisionNode import DecisionNode
+from saturn.core.decisions import node_map
 from saturn.core.decisions.SimpleDecisionEngine import SimpleDecisionEngine
 from saturn.core.queues.QueuePersistentSync import QueuePersistentSync
 from saturn.frameworks.scrapy.ScrapyResponse import ScrapyResponse
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.MetaChecker import MetaChecker
 from saturn.models.dto.decisions.Task import Task
-from saturn.utils.ClassUtil import get_special_modules
 
 
 class ScrapySpider(Spider):
     """scrapy spider."""
 
-    name: str = "saturn"
+    TASK: ClassVar[Task | None] = None
 
     def __init__(self, qp: QueuePersistentSync, key: str, *args: Any, **kwargs: Any) -> None:
         """Init."""
@@ -35,10 +33,15 @@ class ScrapySpider(Spider):
         self._max_idle_time = 1
         self._qp = qp
         self._idle_start_time = 0
-        self._node_map = {m.__name__: m() for m in get_special_modules(nodes.__name__, DecisionNode)}  # type:ignore[abstract]
 
     @override
     def start_requests(self) -> Iterable[Request]:
+        if self.TASK:
+            req = request_from_dict(self.TASK.model_dump(), spider=self)
+            if req:
+                yield req
+
+    def _next_requests(self) -> Iterable[Request]:
         found = 0
         data = self._qp.select(self._key, 0, self._batch_size - 1, -self._batch_size, -1) or []
         for d in data:
@@ -65,7 +68,7 @@ class ScrapySpider(Spider):
         """Spider idle."""
         if self._qp.get_length(self._key) > 0:
             self._idle_start_time = int(time.time())
-        for req in self.start_requests():
+        for req in self._next_requests():
             if self.crawler.engine:
                 self.crawler.engine.crawl(req)
         idle_time = int(time.time()) - self._idle_start_time
@@ -76,7 +79,7 @@ class ScrapySpider(Spider):
     @override
     async def parse(self, response: Response) -> AsyncGenerator[Any, None]:
         meta = Task.model_validate(response.meta)
-        engine = SimpleDecisionEngine(meta.sub or [], self._node_map)
+        engine = SimpleDecisionEngine(meta.sub or [], node_map)
         ctx = Context(checker=MetaChecker(meta=meta, type=meta.type), response=ScrapyResponse(response))
         async for result in engine.process(ctx):
             if isinstance(result, Task):
