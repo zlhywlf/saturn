@@ -24,9 +24,8 @@ class ProcessUtil:
     PLATFORM: ClassVar[str] = platform.system()
     APPS: ClassVar[dict[AppEnum, str]] = {
         AppEnum.DOC: "mkdocs serve -a 0.0.0.0:58000",
-        AppEnum.ADMIN: "waitress-serve --listen=0.0.0.0:58001 spider_admin_pro.main:app"
-        if PLATFORM == "Windows"
-        else "gunicorn --bind 0.0.0.0:58001 spider_admin_pro.main:app",
+        AppEnum.ADMIN: "scrapydweb",
+        AppEnum.SERVE: "scrapyd",
     }
 
     def __init__(self, app: AppEnum, config: ProjectConfig) -> None:
@@ -55,7 +54,8 @@ class ProcessUtil:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)  # noqa S602
         out = iter(p.stdout.readline, b"")  # type: ignore[union-attr]
         q: queue.Queue[str] = queue.Queue()
-        out_thread = threading.Thread(target=lambda: [q.put(_.decode(errors="ignore")) for _ in out])  # type: ignore[func-returns-value]
+        out_thread = threading.Thread(
+            target=lambda: [q.put(_.decode(errors="ignore")) for _ in out])  # type: ignore[func-returns-value]
         out_thread.daemon = True
         out_thread.start()
         timeout = 5.0

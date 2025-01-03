@@ -11,3 +11,4 @@ class AppEnum(StrEnum):
 
     DOC = "doc"
     ADMIN = "admin"
+    SERVE = "serve"

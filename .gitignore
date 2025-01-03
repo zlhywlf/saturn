@@ -14,3 +14,4 @@ src/saturn/_version.py
 *.log*
 cache
 database
+logs
