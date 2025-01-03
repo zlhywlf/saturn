@@ -25,7 +25,6 @@ dependencies = [
   "scrapy~=2.12.0",
   "scrapyd~=1.5.0",
   "scrapydweb~=1.5.0",
-  "sqlalchemy~=2.0.0",
 ]
 
 [project.optional-dependencies]

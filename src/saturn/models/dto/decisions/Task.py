@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class Task(BaseModel):
     """task."""
 
-    id: int
+    id: int = 0
     name: str = "unknown"
     url: str | None = None
     config: str | None = None
@@ -24,3 +24,18 @@ class Task(BaseModel):
     meta: Optional["Task"] = None
     callback: str | None = None
     errback: str | None = None
+
+    def __rshift__(self, n: "Task" | list["Task"]) -> "Task":
+        """>>."""
+        if isinstance(n, list):
+            self.sub = [self._check(_) for _ in n]
+            return self
+        self.meta = self._check(n)
+        return n
+
+    def _check(self, n: "Task") -> "Task":
+        if n is self:
+            msg = "Recursive error"
+            raise RuntimeError(msg)
+        n.id = -1
+        return n
