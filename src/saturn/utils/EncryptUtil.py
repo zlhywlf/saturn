@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 import re
 from base64 import b64encode
 from urllib.parse import urlparse, urlunparse

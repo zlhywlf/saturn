@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 import logging.config
 import platform
 import queue
@@ -54,8 +49,7 @@ class ProcessUtil:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)  # noqa S602
         out = iter(p.stdout.readline, b"")  # type: ignore[union-attr]
         q: queue.Queue[str] = queue.Queue()
-        out_thread = threading.Thread(
-            target=lambda: [q.put(_.decode(errors="ignore")) for _ in out])  # type: ignore[func-returns-value]
+        out_thread = threading.Thread(target=lambda: [q.put(_.decode(errors="ignore")) for _ in out])  # type: ignore[func-returns-value]
         out_thread.daemon = True
         out_thread.start()
         timeout = 5.0
