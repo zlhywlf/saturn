@@ -24,35 +24,32 @@ class ProjectConfig(BaseSettings, env_prefix="SATURN_PROJECT_", env_file=".env",
     rfp_persistent_cls: str = Field(default="saturn.core.rfp.RedisRfpPersistentSync.RedisRfpPersistentSync")
     queue_persistent_cls: str = Field(default="saturn.core.queues.RedisQueuePersistentSync.RedisQueuePersistentSync")
 
+    @computed_field
+    def project_banner(self) -> str:
+        """Project banner."""
+        return f"{self.banner}\n:: the powerful crawler application :: v{version}\n"
 
-@computed_field
-def project_banner(self) -> str:
-    """Project banner."""
-    return f"{self.banner}\n:: the powerful crawler application :: v{version}\n"
+    @field_validator("banner")
+    @classmethod
+    def inject_banner(cls, v: str, info: ValidationInfo) -> str:
+        """Inject banner."""
+        if v:
+            return v
+        banner_path = info.data["banner_path"]
+        if not banner_path.exists():
+            return cls.default_banner()
+        with banner_path.open("r") as f:
+            return "".join(f.readlines())
 
-
-@field_validator("banner")
-@classmethod
-def inject_banner(cls, v: str, info: ValidationInfo) -> str:
-    """Inject banner."""
-    if v:
-        return v
-    banner_path = info.data["banner_path"]
-    if not banner_path.exists():
-        return cls.default_banner()
-    with banner_path.open("r") as f:
-        return "".join(f.readlines())
-
-
-@classmethod
-def default_banner(cls) -> str:
-    """Default banner."""
-    return r"""
- ::::::::      ::: ::::::::::: :::    ::: :::::::::  ::::    :::
-:+:    :+:   :+: :+:   :+:     :+:    :+: :+:    :+: :+:+:   :+:
-+:+         +:+   +:+  +:+     +:+    +:+ +:+    +:+ :+:+:+  +:+
-+#++:++#++ +#++:++#++: +#+     +#+    +:+ +#++:++#:  +#+ +:+ +#+
-       +#+ +#+     +#+ +#+     +#+    +#+ +#+    +#+ +#+  +#+#+#
-#+#    #+# #+#     #+# #+#     #+#    #+# #+#    #+# #+#   #+#+#
- ########  ###     ### ###      ########  ###    ### ###    ####
-"""
+    @classmethod
+    def default_banner(cls) -> str:
+        """Default banner."""
+        return r"""
+     ::::::::      ::: ::::::::::: :::    ::: :::::::::  ::::    :::
+    :+:    :+:   :+: :+:   :+:     :+:    :+: :+:    :+: :+:+:   :+:
+    +:+         +:+   +:+  +:+     +:+    +:+ +:+    +:+ :+:+:+  +:+
+    +#++:++#++ +#++:++#++: +#+     +#+    +:+ +#++:++#:  +#+ +:+ +#+
+           +#+ +#+     +#+ +#+     +#+    +#+ +#+    +#+ +#+  +#+#+#
+    #+#    #+# #+#     #+# #+#     #+#    #+# #+#    #+# #+#   #+#+#
+     ########  ###     ### ###      ########  ###    ### ###    ####
+    """
