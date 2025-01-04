@@ -40,6 +40,5 @@ class Task(BaseModel):
         if n is self:
             msg = "Recursive error"
             raise RuntimeError(msg)
-        n_c = n.model_copy(deep=True)
-        n_c.id = -1
-        return n_c
+        n.id = -1
+        return n.model_copy(deep=True)
