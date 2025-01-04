@@ -8,6 +8,6 @@ quote = entry_task(
 
 paging = list_task(next_path="//ul/li[@class='next']/a", query="{0}", patterns=[r'href="([^"]+)"'], recursion=True)
 
-item = list_task(next_path="//div[@class='quote']//a", query="{0}", patterns=[r'href="([^"]+)"'])
+item = list_task(next_path="//div[@class='quote']/span/a[last()]", query="{0}", patterns=[r'href="([^"]+)"'])
 
 quote >> paging >> [item >> save_item]
