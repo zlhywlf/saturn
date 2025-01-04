@@ -7,3 +7,7 @@ class Result(BaseModel):
     type: str | bytes | None
     content: bytes | None
     name: str
+
+    def __str__(self) -> str:
+        """Str."""
+        return f"{self.type}: {self.name}"
