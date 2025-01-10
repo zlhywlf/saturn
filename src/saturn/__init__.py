@@ -59,7 +59,6 @@ def list_task(
     query: str = "",
     patterns: list[str] | None = None,
     url_patterns: list[str] | None = None,
-    url_encrypt: str | None = None,
     convert_json: bool = False,
 ) -> Task:
     """List task."""
@@ -83,7 +82,6 @@ def list_task(
             query=query,
             patterns=patterns,
             url_patterns=url_patterns,
-            url_encrypt=url_encrypt,
             convert_json=convert_json,
         ).model_dump_json(),
     )

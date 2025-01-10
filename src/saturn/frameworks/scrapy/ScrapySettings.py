@@ -13,4 +13,5 @@ SCHEDULER = "saturn.frameworks.scrapy.ScrapyScheduler.ScrapyScheduler"
 DOWNLOADER_MIDDLEWARES = {
     "saturn.frameworks.scrapy.middlewares.rs.RSVMPCookie.RSVMPCookie": 1,
     "saturn.frameworks.scrapy.middlewares.SetCookie.SetCookie": 2,
+    "saturn.frameworks.scrapy.middlewares.aes.AESUrlECB.AESUrlECB": 3,
 }

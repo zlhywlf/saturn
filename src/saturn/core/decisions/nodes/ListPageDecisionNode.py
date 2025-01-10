@@ -1,6 +1,6 @@
 import contextlib
-from collections.abc import AsyncGenerator, Callable
-from typing import Any, ClassVar, override
+from collections.abc import AsyncGenerator
+from typing import Any, override
 
 from parsel.selector import Selector
 from pydantic import BaseModel, TypeAdapter
@@ -10,13 +10,10 @@ from saturn.core.decisions.DecisionNode import DecisionNode
 from saturn.models.dto.decisions.Context import Context
 from saturn.models.dto.decisions.Result import Result
 from saturn.models.dto.decisions.Task import Task
-from saturn.utils.EncryptUtil import modify_url
 
 
 class ListPageDecisionNode(DecisionNode):
     """list page decision node."""
-
-    ENCRYPT_FUNC: ClassVar[dict[str, Callable[[str], str]]] = {"modify_url": modify_url}
 
     class Config(BaseModel):
         """config."""
@@ -26,7 +23,6 @@ class ListPageDecisionNode(DecisionNode):
         query: str = ""
         patterns: list[str] | None = None
         url_patterns: list[str] | None = None
-        url_encrypt: str | None = None
         convert_json: bool = False
 
     def __init__(self) -> None:
@@ -58,7 +54,6 @@ class ListPageDecisionNode(DecisionNode):
                     )
                 )
                 full_url = await self._handle_url(full_url, config, selector)
-                full_url = await self._handle_encrypt_url(full_url, config)
                 body = query.encode() if meta.method.lower() == "post" else b""
                 yield Task(
                     id=0,
@@ -67,6 +62,7 @@ class ListPageDecisionNode(DecisionNode):
                     method=meta.method,
                     headers=meta.headers,
                     body=body,
+                    cb_kwargs=meta.cb_kwargs,
                 )
 
     async def _handle_a_javascript(self, config: Config, selector: Selector) -> str | None:
@@ -88,11 +84,6 @@ class ListPageDecisionNode(DecisionNode):
         if not s:
             return url
         return url.format(*s)
-
-    async def _handle_encrypt_url(self, url: str, config: Config) -> str:
-        if not config.url_encrypt or config.url_encrypt not in self.ENCRYPT_FUNC:
-            return url
-        return self.ENCRYPT_FUNC[config.url_encrypt](url)
 
     def convert_json_strings_to_dict(self, d: dict[str, Any]) -> dict[str, Any]:
         """Convert json strings to dict."""
