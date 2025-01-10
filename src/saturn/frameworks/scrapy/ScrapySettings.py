@@ -10,4 +10,7 @@ FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {"saturn.frameworks.scrapy.pipelines.SaveResultLocal.SaveResultLocal": 1}
 DUPEFILTER_CLASS = "saturn.frameworks.scrapy.ScrapyRfpDupeFilter.ScrapyRfpDupeFilter"
 SCHEDULER = "saturn.frameworks.scrapy.ScrapyScheduler.ScrapyScheduler"
-DOWNLOADER_MIDDLEWARES = {"saturn.frameworks.scrapy.middlewares.rs.RSVMPCookie.RSVMPCookie": 1}
+DOWNLOADER_MIDDLEWARES = {
+    "saturn.frameworks.scrapy.middlewares.rs.RSVMPCookie.RSVMPCookie": 1,
+    "saturn.frameworks.scrapy.middlewares.SetCookie.SetCookie": 2,
+}
