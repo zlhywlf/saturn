@@ -10,4 +10,4 @@ class Result(BaseModel):
 
     def __str__(self) -> str:
         """Str."""
-        return f"{self.type}: {self.name}"
+        return f"{self.type!r}: {self.name}"

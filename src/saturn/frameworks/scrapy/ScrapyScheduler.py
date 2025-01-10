@@ -89,7 +89,7 @@ class ScrapyScheduler(BaseScheduler):
             return False
         if self._stats:
             self._stats.inc_value("scheduler/enqueued/redis", spider=self._spider)
-        self.queue.push(Task.model_validate(request.to_dict()))
+        self.queue.push(Task.model_validate(request.to_dict(spider=self._spider)))
         return True
 
     @override
@@ -97,7 +97,7 @@ class ScrapyScheduler(BaseScheduler):
         task = self.queue.pop()
         if task and self._stats:
             self._stats.inc_value("scheduler/dequeued/redis", spider=self._spider)
-        return request_from_dict(task.model_dump()) if task else None
+        return request_from_dict(task.model_dump(), spider=self._spider) if task else None
 
     @override
     def has_pending_requests(self) -> bool:
