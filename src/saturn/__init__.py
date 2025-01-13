@@ -108,6 +108,9 @@ def paging_task(
     is_url_paging: bool = False,
     total_pattern: str = "",
     size_pattern: str = "",
+    pages_pattern: str = "",
+    start_zero: bool = False,
+    skip_pages: list[int] | None = None,
 ) -> Task:
     """Paging task."""
     return Task(
@@ -132,6 +135,9 @@ def paging_task(
             is_url_paging=is_url_paging,
             total_pattern=total_pattern,
             size_pattern=size_pattern,
+            pages_pattern=pages_pattern,
+            start_zero=start_zero,
+            skip_pages=skip_pages,
         ).model_dump_json(),
     )
 

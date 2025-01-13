@@ -24,6 +24,9 @@ class PagingDecisionNode(DecisionNode):
         is_url_paging: bool = False
         total_pattern: str = ""
         size_pattern: str = ""
+        pages_pattern: str = ""
+        start_zero: bool = False
+        skip_pages: list[int] | None = None
 
     @override
     async def handle(self, ctx: Context) -> AsyncGenerator[Result | Task, None]:
@@ -35,7 +38,13 @@ class PagingDecisionNode(DecisionNode):
             d = (await ctx.response.extract(config.pages)).get()
             if d is None:
                 return
-            pages = int(d)
+            if config.pages_pattern:
+                m = re.search(config.pages_pattern, d)
+                if m is None:
+                    return
+                pages = int(m.group(1))
+            else:
+                pages = int(d)
         else:
             total = (await ctx.response.extract(config.total)).get()
             size = (await ctx.response.extract(config.size)).get()
@@ -54,10 +63,13 @@ class PagingDecisionNode(DecisionNode):
             pages = math.ceil(int(total) / int(size))
         url = meta.url if meta.url else (await ctx.response.url)
         for page in range(pages):
-            if page > 1:
+            if page > 2:
                 break
-            full_url = url.format(page + 1) if config.is_url_paging else url
-            query = config.query.format(page + 1) if not config.is_url_paging else config.query
+            num = page if config.start_zero else page + 1
+            if config.skip_pages and num in config.skip_pages:
+                continue
+            full_url = url.format(num) if config.is_url_paging else url
+            query = config.query.format(num) if not config.is_url_paging else config.query
             body = query.encode() if meta.method.lower() == "post" else b""
             yield Task(
                 id=0,
